@@ -120,7 +120,12 @@ def to_markdown(data: dict) -> str:
         f"missing {', '.join(gap['missing_choices'])}"
         for gap in gaps
     ) or "No branch gaps."
-    return f"""# {data['service']}
+    return f"""---
+layout: default
+title: {data['service']}
+---
+
+# {data['service']}
 
 {data.get('description', '')}
 
@@ -134,6 +139,22 @@ def to_markdown(data: dict) -> str:
 
 {gap_lines}
 """
+
+
+def to_index_markdown(services: list[dict]) -> str:
+    rows = []
+    for data in services:
+        hit, total = edge_coverage(data)
+        pct = (hit / total * 100) if total else 0.0
+        rows.append(f"- [{data['service']}]({data['service']}.md) — {hit}/{total} edges covered ({pct:.0f}%)")
+    return """---
+layout: default
+title: SQM service coverage
+---
+
+# SQM service coverage
+
+""" + "\n".join(rows) + "\n"
 
 
 def iter_service_files(names: list[str]) -> list[pathlib.Path]:
@@ -150,10 +171,12 @@ def main() -> None:
     parser.add_argument("--md", metavar="DIR", help="write a Markdown file per service into DIR (renders as a Mermaid diagram on GitHub) instead of printing")
     args = parser.parse_args()
 
+    all_data = []
     for path in iter_service_files(args.service):
         if not path.exists():
             sys.exit(f"no such service file: {path}")
         data = load(path)
+        all_data.append(data)
         if args.html:
             out_dir = pathlib.Path(args.html)
             out_dir.mkdir(parents=True, exist_ok=True)
@@ -171,6 +194,12 @@ def main() -> None:
         else:
             print_report(data)
             print()
+
+    if args.md and not args.service:
+        out_dir = pathlib.Path(args.md)
+        index_path = out_dir / "index.md"
+        index_path.write_text(to_index_markdown(all_data))
+        print(f"wrote {index_path}")
 
 
 if __name__ == "__main__":

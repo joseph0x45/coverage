@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{{ page.title | default: site.title }}</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<style>
+  body { font-family: sans-serif; margin: 2rem auto; max-width: 900px; line-height: 1.5; }
+  nav a { text-decoration: none; color: #345; }
+  pre.mermaid { text-align: center; }
+</style>
+</head>
+<body>
+<nav><a href="{{ '/' | relative_url }}">&larr; all services</a></nav>
+{{ content }}
+<script>
+  // Jekyll/rouge renders ```mermaid fences as <div class="language-mermaid...">
+  // wrapping a <code> block, which is the same source GitHub's own file-view
+  // renderer reads directly. mermaid.js instead looks for <pre class="mermaid">,
+  // so swap the wrapper before initializing.
+  document.querySelectorAll('div.language-mermaid').forEach(function (wrapper) {
+    var code = wrapper.querySelector('code');
+    var pre = document.createElement('pre');
+    pre.className = 'mermaid';
+    pre.textContent = code.textContent;
+    wrapper.replaceWith(pre);
+  });
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>
