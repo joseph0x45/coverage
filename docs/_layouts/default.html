@@ -14,12 +14,11 @@
 <nav><a href="{{ '/' | relative_url }}">&larr; all services</a></nav>
 {{ content }}
 <script>
-  // Jekyll/rouge renders ```mermaid fences as <div class="language-mermaid...">
-  // wrapping a <code> block, which is the same source GitHub's own file-view
-  // renderer reads directly. mermaid.js instead looks for <pre class="mermaid">,
-  // so swap the wrapper before initializing.
-  document.querySelectorAll('div.language-mermaid').forEach(function (wrapper) {
-    var code = wrapper.querySelector('code');
+  // Jekyll renders ```mermaid fences as <pre><code class="language-mermaid">,
+  // the same source GitHub's own file-view renderer reads directly. mermaid.js
+  // instead looks for <pre class="mermaid">, so swap the wrapper before init.
+  document.querySelectorAll('code.language-mermaid').forEach(function (code) {
+    var wrapper = code.closest('div.highlighter-rouge') || code.parentElement;
     var pre = document.createElement('pre');
     pre.className = 'mermaid';
     pre.textContent = code.textContent;
