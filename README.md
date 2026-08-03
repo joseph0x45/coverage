@@ -79,18 +79,28 @@ decision points where some but not all outgoing choices are marked
 `covered: true` — the thing a flat list hides completely. `--html` writes
 an actual page you can open locally (solid arrow = covered, dashed = not).
 
-## docs/ — viewable on GitHub, auto-regenerated
+## docs/ — viewable on GitHub, and as a live site
 
 `.venv/bin/python3 build.py --md docs` writes one Markdown file per
-service into `docs/`, each with the same flowchart wrapped in a
-```` ```mermaid ```` fence — GitHub renders that natively, so
-`docs/at-neb.md` etc. are viewable straight from the repo on
-github.com, no local run needed.
+service into `docs/` plus an `index.md` linking all of them, each with
+the flowchart wrapped in a ```` ```mermaid ```` fence — GitHub renders
+that natively, so `docs/at-neb.md` etc. are viewable straight from the
+repo on github.com, no local run needed.
+
+The same `docs/` folder is also a (very small) Jekyll site, published via
+**GitHub Pages** at **https://joseph0x45.github.io/coverage/** — a proper
+site with a service index, no need to click into the repo at all.
+`docs/_config.yml` + `docs/_layouts/default.html` load mermaid.js and
+convert Jekyll's rendered fenced-code output into the `<pre
+class="mermaid">` form mermaid.js expects, so the diagrams actually
+render (not just show as text) without touching the Markdown source
+GitHub's own file-view already reads.
 
 A GitHub Action (`.github/workflows/build-docs.yml`) regenerates and
 commits `docs/` automatically on every push that touches `services/**`
-or `build.py`, so it can't go stale relative to what's actually
-committed — you still only need to touch `services/*.yaml` by hand.
+or `build.py` — GitHub Pages then rebuilds from that commit on its own.
+So it can't go stale relative to what's actually committed — you still
+only need to touch `services/*.yaml` by hand.
 
 ## Workflow
 
