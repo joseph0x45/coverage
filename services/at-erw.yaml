@@ -1,0 +1,147 @@
+service: at-erw
+description: >
+  Erwerbstätigkeit — extend or newly apply for a residence permit for the
+  purpose of gainful employment.
+
+# Non-branching data-entry steps (enter dates, enter duration, etc.) are
+# collapsed into the edges that lead through them — only points where the
+# flow actually forks, and the terminal action each fork ends on, are
+# modeled as nodes. See README.md.
+
+nodes:
+  application_type:
+    type: decision
+    label: What type of application are you making?
+
+  interruptions_new:
+    type: decision
+    label: >
+      (new application) Have there been any interruptions in the stay in
+      Germany of more than 6 months?
+  has_residence_permit:
+    type: decision
+    label: Do you already have a residence permit from a German Foreigners' Registration Office?
+  has_diplomatic_visa:
+    type: decision
+    label: Have you received a visa from a German diplomatic mission abroad?
+  has_schengen_permit:
+    type: decision
+    label: Do you have a residence permit issued to you in another Schengen State?
+  has_temp_residence:
+    type: decision
+    label: Do you have a 'certificate of temporary residence permit'?
+  has_suspension:
+    type: decision
+    label: Do you have a 'certificate of suspension of deportation (tolerated stay)'?
+  has_vocational_qualification:
+    type: decision
+    label: >
+      Have you completed a university degree, qualified vocational training,
+      or state-recognised vocational training in a care assistant role?
+  country_group:
+    type: decision
+    label: Which country do you belong to?
+
+  interruptions_renew:
+    type: decision
+    label: >
+      (renewal) Have there been any interruptions in the stay in Germany of
+      more than 6 months?
+  has_existing_permit:
+    type: decision
+    label: Do you already have a residence permit?
+
+  periods_abroad_new:
+    type: leaf
+    label: >
+      Enter periods spent abroad (date range + reason each), then handle
+      maintenance obligations + statutory violations components
+  periods_abroad_renew:
+    type: leaf
+    label: >
+      Enter periods spent abroad (date range + reason each), then handle
+      maintenance obligations + statutory violations components
+  upload_residence_permit:
+    type: leaf
+    label: >
+      Upload copy of current residence permit, then handle maintenance
+      obligations + statutory violations components
+  upload_diplomatic_visa:
+    type: leaf
+    label: >
+      Upload copy of current visa, then handle maintenance obligations +
+      statutory violations components
+  upload_schengen_permit:
+    type: leaf
+    label: >
+      Upload copy of foreign residence permit, then handle maintenance
+      obligations + statutory violations components
+  blocked_temp_residence:
+    type: leaf
+    label: >
+      Service blocked — asylum procedure in progress, apply for a work
+      permit at the Foreigners' Office instead
+  upload_duldung:
+    type: leaf
+    label: >
+      Upload copy of certificate of suspension of deportation (tolerated
+      stay), then handle maintenance obligations + statutory violations
+      components
+  blocked_no_qualification:
+    type: leaf
+    label: >
+      Service blocked — tolerated stay without a qualifying degree, contact
+      the Foreigners' Registration Office directly
+  continue_europe:
+    type: leaf
+    label: >
+      No additional upload required, handle maintenance obligations +
+      statutory violations components
+  upload_entry_stamp:
+    type: leaf
+    label: >
+      Upload copy of entry stamp, then handle maintenance obligations +
+      statutory violations components
+  blocked_different_country:
+    type: leaf
+    label: >
+      Service blocked — a visa from a German embassy is required before
+      applying
+  upload_existing_permit:
+    type: leaf
+    label: >
+      Upload copy of existing residence permit, then handle maintenance
+      obligations + statutory violations components
+  blocked_no_existing_permit:
+    type: leaf
+    label: Service blocked — cannot renew without an existing permit
+
+edges:
+  - {from: application_type, to: interruptions_new, choice: new}
+  - {from: application_type, to: interruptions_renew, choice: renew}
+
+  - {from: interruptions_new, to: periods_abroad_new, choice: "yes"}
+  - {from: interruptions_new, to: has_residence_permit, choice: "no"}
+
+  - {from: has_residence_permit, to: upload_residence_permit, choice: "yes"}
+  - {from: has_residence_permit, to: has_diplomatic_visa, choice: "no"}
+  - {from: has_diplomatic_visa, to: upload_diplomatic_visa, choice: "yes"}
+  - {from: has_diplomatic_visa, to: has_schengen_permit, choice: "no"}
+  - {from: has_schengen_permit, to: upload_schengen_permit, choice: "yes"}
+  - {from: has_schengen_permit, to: has_temp_residence, choice: "no"}
+  - {from: has_temp_residence, to: blocked_temp_residence, choice: "yes"}
+  - {from: has_temp_residence, to: has_suspension, choice: "no"}
+  - {from: has_suspension, to: has_vocational_qualification, choice: "yes"}
+  - {from: has_suspension, to: country_group, choice: "no"}
+  - {from: has_vocational_qualification, to: upload_duldung, choice: "yes"}
+  - {from: has_vocational_qualification, to: blocked_no_qualification, choice: "no"}
+  - {from: country_group, to: continue_europe, choice: europe}
+  - {from: country_group, to: upload_entry_stamp, choice: offshore}
+  - {from: country_group, to: blocked_different_country, choice: different}
+
+  - {from: interruptions_renew, to: periods_abroad_renew, choice: "yes"}
+  - {from: interruptions_renew, to: has_existing_permit, choice: "no"}
+  - {from: has_existing_permit, to: upload_existing_permit, choice: "yes"}
+  - {from: has_existing_permit, to: blocked_no_existing_permit, choice: "no"}
+
+test_cases: []

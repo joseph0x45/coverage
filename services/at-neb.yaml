@@ -1,0 +1,29 @@
+service: at-neb
+description: >
+  Nebenbestimmungen — request a change to a condition (Nebenbestimmung) on an
+  existing residence document.
+
+nodes:
+  residence_document:
+    type: decision
+    label: What is your current residence document?
+  upload_residence_title:
+    type: leaf
+    label: >
+      Upload copy of residence title + supplementary sheet, describe the
+      additional provision to be changed
+  upload_letter_of_recognition:
+    type: leaf
+    label: >
+      Upload copy of BAMF letter of recognition, describe the additional
+      provision to be changed
+
+edges:
+  - from: residence_document
+    to: upload_residence_title
+    choice: residence_title
+  - from: residence_document
+    to: upload_letter_of_recognition
+    choice: letter_of_recognition
+
+test_cases: []
