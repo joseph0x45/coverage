@@ -117,31 +117,30 @@ nodes:
     label: Service blocked — cannot renew without an existing permit
 
 edges:
-  - {from: application_type, to: interruptions_new, choice: new}
-  - {from: application_type, to: interruptions_renew, choice: renew}
+  - {from: application_type, to: interruptions_new, choice: new, covered: false}
+  - {from: application_type, to: interruptions_renew, choice: renew, covered: false}
 
-  - {from: interruptions_new, to: periods_abroad_new, choice: "yes"}
-  - {from: interruptions_new, to: has_residence_permit, choice: "no"}
+  - {from: interruptions_new, to: periods_abroad_new, choice: "yes", covered: false}
+  - {from: interruptions_new, to: has_residence_permit, choice: "no", covered: false}
 
-  - {from: has_residence_permit, to: upload_residence_permit, choice: "yes"}
-  - {from: has_residence_permit, to: has_diplomatic_visa, choice: "no"}
-  - {from: has_diplomatic_visa, to: upload_diplomatic_visa, choice: "yes"}
-  - {from: has_diplomatic_visa, to: has_schengen_permit, choice: "no"}
-  - {from: has_schengen_permit, to: upload_schengen_permit, choice: "yes"}
-  - {from: has_schengen_permit, to: has_temp_residence, choice: "no"}
-  - {from: has_temp_residence, to: blocked_temp_residence, choice: "yes"}
-  - {from: has_temp_residence, to: has_suspension, choice: "no"}
-  - {from: has_suspension, to: has_vocational_qualification, choice: "yes"}
-  - {from: has_suspension, to: country_group, choice: "no"}
-  - {from: has_vocational_qualification, to: upload_duldung, choice: "yes"}
-  - {from: has_vocational_qualification, to: blocked_no_qualification, choice: "no"}
-  - {from: country_group, to: continue_europe, choice: europe}
-  - {from: country_group, to: upload_entry_stamp, choice: offshore}
-  - {from: country_group, to: blocked_different_country, choice: different}
+  - {from: has_residence_permit, to: upload_residence_permit, choice: "yes", covered: false}
+  - {from: has_residence_permit, to: has_diplomatic_visa, choice: "no", covered: false}
+  - {from: has_diplomatic_visa, to: upload_diplomatic_visa, choice: "yes", covered: false}
+  - {from: has_diplomatic_visa, to: has_schengen_permit, choice: "no", covered: false}
+  - {from: has_schengen_permit, to: upload_schengen_permit, choice: "yes", covered: false}
+  - {from: has_schengen_permit, to: has_temp_residence, choice: "no", covered: false}
+  - {from: has_temp_residence, to: blocked_temp_residence, choice: "yes", covered: false}
+  - {from: has_temp_residence, to: has_suspension, choice: "no", covered: false}
+  - {from: has_suspension, to: has_vocational_qualification, choice: "yes", covered: false}
+  - {from: has_suspension, to: country_group, choice: "no", covered: false}
+  - {from: has_vocational_qualification, to: upload_duldung, choice: "yes", covered: false}
+  - {from: has_vocational_qualification, to: blocked_no_qualification, choice: "no", covered: false}
+  - {from: country_group, to: continue_europe, choice: europe, covered: false}
+  - {from: country_group, to: upload_entry_stamp, choice: offshore, covered: false}
+  - {from: country_group, to: blocked_different_country, choice: different, covered: false}
 
-  - {from: interruptions_renew, to: periods_abroad_renew, choice: "yes"}
-  - {from: interruptions_renew, to: has_existing_permit, choice: "no"}
-  - {from: has_existing_permit, to: upload_existing_permit, choice: "yes"}
-  - {from: has_existing_permit, to: blocked_no_existing_permit, choice: "no"}
+  - {from: interruptions_renew, to: periods_abroad_renew, choice: "yes", covered: false}
+  - {from: interruptions_renew, to: has_existing_permit, choice: "no", covered: false}
+  - {from: has_existing_permit, to: upload_existing_permit, choice: "yes", covered: false}
+  - {from: has_existing_permit, to: blocked_no_existing_permit, choice: "no", covered: false}
 
-test_cases: []

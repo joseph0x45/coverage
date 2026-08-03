@@ -12,30 +12,21 @@ def load(path: pathlib.Path) -> dict:
     data = yaml.safe_load(path.read_text())
     data.setdefault("nodes", {})
     data.setdefault("edges", [])
-    data.setdefault("test_cases", [])
     data["description"] = data.get("description", "").strip()
     for node in data["nodes"].values():
         node["label"] = node.get("label", "").strip()
+    for edge in data["edges"]:
+        edge.setdefault("covered", False)
     return data
-
-
-def covered_edges(data: dict) -> set[tuple[str, str]]:
-    covered = set()
-    for tc in data["test_cases"]:
-        for hop in tc.get("path", []):
-            covered.add((hop[0], hop[1]))
-    return covered
 
 
 def edge_coverage(data: dict) -> tuple[int, int]:
     total = len(data["edges"])
-    covered = covered_edges(data)
-    hit = sum(1 for e in data["edges"] if (e["from"], e["to"]) in covered)
+    hit = sum(1 for e in data["edges"] if e["covered"])
     return hit, total
 
 
 def branch_gaps(data: dict) -> list[dict]:
-    covered = covered_edges(data)
     by_node: dict[str, list[dict]] = {}
     for e in data["edges"]:
         by_node.setdefault(e["from"], []).append(e)
@@ -45,7 +36,7 @@ def branch_gaps(data: dict) -> list[dict]:
         if node.get("type") != "decision":
             continue
         outgoing = by_node.get(node_id, [])
-        missing = [e["choice"] for e in outgoing if (e["from"], e["to"]) not in covered]
+        missing = [e["choice"] for e in outgoing if not e["covered"]]
         if missing:
             gaps.append({
                 "node": node_id,
@@ -69,22 +60,21 @@ def print_report(data: dict) -> None:
             print("No branch gaps.")
         return
 
-    print("\nBranch gaps (decision points with untested choices):")
+    print("\nBranch gaps (decision points with uncovered choices):")
     for gap in gaps:
         tested = gap["total_choices"] - len(gap["missing_choices"])
-        print(f"  - {gap['node']} ({tested}/{gap['total_choices']} tested): "
+        print(f"  - {gap['node']} ({tested}/{gap['total_choices']} covered): "
               f"missing {', '.join(gap['missing_choices'])}")
 
 
 def to_mermaid(data: dict) -> str:
-    covered = covered_edges(data)
     lines = ["flowchart TD"]
     for node_id, node in data["nodes"].items():
         label = node.get("label", node_id).replace('"', "'")
         shape = f'{{"{label}"}}' if node.get("type") == "decision" else f'["{label}"]'
         lines.append(f"    {node_id}{shape}")
     for e in data["edges"]:
-        style = "-->" if (e["from"], e["to"]) in covered else "-.->"
+        style = "-->" if e["covered"] else "-.->"
         choice = e.get("choice", "")
         lines.append(f'    {e["from"]} {style}|"{choice}"| {e["to"]}')
     return "\n".join(lines)

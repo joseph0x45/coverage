@@ -1,15 +1,16 @@
 # coverage
 
-Test-case coverage tracking for SQM/DVS service flows, tracked as a
-decision graph instead of a flat list of Bugzilla test-case titles.
+Test coverage tracking for SQM/DVS service flows, tracked as a decision
+graph instead of a flat list of Bugzilla test-case titles.
 
 Replaces `fig` (nested JSON decision trees) and `atlas` (per-service
 markdown page docs + a separate `test-cases.md` language/login/AGS policy
 tracker). This tool intentionally does **not** track language, login
 method, or AGS — those don't change which branch of the service flow gets
 exercised, so they aren't "coverage" in the sense this tool cares about.
-What it tracks is: which decisions in the actual flow have been exercised,
-and by which choice.
+It also doesn't know anything about Bugzilla test cases themselves — it
+only tracks WHAT paths exist through a service and WHETHER each one is
+covered by at least one test case, nothing more.
 
 ## Problem
 
@@ -30,15 +31,16 @@ Proxy | Everything else randomized`) can't answer:
   `leaf` (a terminal outcome — an upload, a submit, a "service blocked"
   message).
 - **Edges** connect a `decision` node to whatever it leads to next, labeled
-  with the `choice` that takes you there.
+  with the `choice` that takes you there, plus a `covered: true/false`
+  flag.
 - Non-branching steps in between (enter a date, enter a duration, fill a
   field) are **not** modeled as nodes — they don't fork, so there's nothing
   to cover. They get folded into the edge/leaf label instead. Only model a
   node when the flow actually forks or terminates.
-- **Test cases** are a `path`: the list of edges that test case's run
-  actually walked, including edges crossed incidentally on the way to
-  whatever the test case's "main point" was — that's what makes edge
-  coverage numbers meaningful rather than only counting deliberate targets.
+- **`covered` is set by hand**, same as fig's per-node `covered: true/false`
+  toggle — flip an edge to `true` once you've written and confirmed a
+  Selenium test case actually exercises that choice. Nothing in this repo
+  infers coverage automatically from test runs or Bugzilla.
 
 See `services/at-neb.yaml` (flat: one decision, two leaves) and
 `services/at-erw.yaml` (branching: a real multi-decision chain with
@@ -55,12 +57,7 @@ nodes:
   other_id: {type: leaf, label: "Terminal action, e.g. upload doc"}
 
 edges:
-  - {from: some_id, to: other_id, choice: "Answer that leads here"}
-
-test_cases:
-  - id: TC-101                # Bugzilla ID
-    bugzilla: "<original title, for reference>"
-    path: [[some_id, other_id], ...]   # every edge this test case walks
+  - {from: some_id, to: other_id, choice: "Answer that leads here", covered: false}
 ```
 
 One YAML file per service under `services/`, not one shared file — keeps
@@ -77,26 +74,25 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ```
 
 The report prints edge coverage (`hit/total`, %) and a branch-gap table:
-decision points where some but not all outgoing choices have been
-exercised by any test case — the thing a flat list hides completely.
+decision points where some but not all outgoing choices are marked
+`covered: true` — the thing a flat list hides completely. `--mermaid`
+renders the same graph as a flowchart (solid arrow = covered, dashed =
+not), so there's no separate diagram to keep in sync by hand.
 
 ## Workflow
 
 1. Walk a service's real flow once; each fork becomes a `decision` node,
    each terminal outcome a `leaf`, each choice an `edge`.
-2. Map existing Bugzilla test cases onto `test_cases` entries: an `id` and
-   a `path` of every edge that test case's run crosses.
-3. Run `build.py` to get edge coverage % and the branch-gap table.
-4. Use the gap table to decide what new test cases to actually write —
-   coverage-driven rather than ad hoc.
-5. As new Selenium tests get written or existing ones change, update the
-   same YAML file's `nodes`/`edges`/`test_cases` so the doc and the test
-   code never drift apart.
+2. Run `build.py` to see edge coverage % and the branch-gap table.
+3. Use the gap table to decide what to test next.
+4. Once a Selenium test case is written and confirmed to exercise a given
+   choice, flip that edge's `covered` to `true` by hand.
+5. If the flow itself changes, update the same YAML file's `nodes`/`edges`
+   so the doc and the test code never drift apart.
 
 ## Status
 
 `services/at-neb.yaml` and `services/at-erw.yaml` have real, accurate
-`nodes`/`edges` (migrated from the old `fig` JSON trees), but empty
-`test_cases` — filling those in from the real Bugzilla test-case list is
-the next real task, one service at a time, same as any other file-by-file
-pass in this project.
+`nodes`/`edges` (migrated from the old `fig` JSON trees). All edges
+currently `covered: false` — flip them by hand as coverage is confirmed
+per service, service by service.
