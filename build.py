@@ -110,6 +110,32 @@ def to_html(data: dict) -> str:
 """
 
 
+def to_markdown(data: dict) -> str:
+    hit, total = edge_coverage(data)
+    pct = (hit / total * 100) if total else 0.0
+    mermaid = to_mermaid(data)
+    gaps = branch_gaps(data)
+    gap_lines = "\n".join(
+        f"- `{gap['node']}` ({gap['total_choices'] - len(gap['missing_choices'])}/{gap['total_choices']} covered): "
+        f"missing {', '.join(gap['missing_choices'])}"
+        for gap in gaps
+    ) or "No branch gaps."
+    return f"""# {data['service']}
+
+{data.get('description', '')}
+
+**Edge coverage:** {hit}/{total} ({pct:.0f}%) — solid arrow = covered, dashed = not covered
+
+```mermaid
+{mermaid}
+```
+
+## Branch gaps
+
+{gap_lines}
+"""
+
+
 def iter_service_files(names: list[str]) -> list[pathlib.Path]:
     if not names:
         return sorted(SERVICES_DIR.glob("*.yaml"))
@@ -121,6 +147,7 @@ def main() -> None:
     parser.add_argument("service", nargs="*", help="service id(s), e.g. at-erw (default: all)")
     parser.add_argument("--mermaid", action="store_true", help="print a Mermaid flowchart instead of the report")
     parser.add_argument("--html", metavar="DIR", help="write a viewable HTML flowchart per service into DIR instead of printing")
+    parser.add_argument("--md", metavar="DIR", help="write a Markdown file per service into DIR (renders as a Mermaid diagram on GitHub) instead of printing")
     args = parser.parse_args()
 
     for path in iter_service_files(args.service):
@@ -132,6 +159,12 @@ def main() -> None:
             out_dir.mkdir(parents=True, exist_ok=True)
             out_path = out_dir / f"{data['service']}.html"
             out_path.write_text(to_html(data))
+            print(f"wrote {out_path}")
+        elif args.md:
+            out_dir = pathlib.Path(args.md)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = out_dir / f"{data['service']}.md"
+            out_path.write_text(to_markdown(data))
             print(f"wrote {out_path}")
         elif args.mermaid:
             print(to_mermaid(data))

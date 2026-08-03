@@ -77,8 +77,20 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 The report prints edge coverage (`hit/total`, %) and a branch-gap table:
 decision points where some but not all outgoing choices are marked
 `covered: true` — the thing a flat list hides completely. `--html` writes
-an actual page you can open locally (solid arrow = covered, dashed = not),
-so there's no separate diagram to keep in sync by hand.
+an actual page you can open locally (solid arrow = covered, dashed = not).
+
+## docs/ — viewable on GitHub, auto-regenerated
+
+`.venv/bin/python3 build.py --md docs` writes one Markdown file per
+service into `docs/`, each with the same flowchart wrapped in a
+```` ```mermaid ```` fence — GitHub renders that natively, so
+`docs/at-neb.md` etc. are viewable straight from the repo on
+github.com, no local run needed.
+
+A GitHub Action (`.github/workflows/build-docs.yml`) regenerates and
+commits `docs/` automatically on every push that touches `services/**`
+or `build.py`, so it can't go stale relative to what's actually
+committed — you still only need to touch `services/*.yaml` by hand.
 
 ## Workflow
 
