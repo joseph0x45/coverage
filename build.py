@@ -80,6 +80,36 @@ def to_mermaid(data: dict) -> str:
     return "\n".join(lines)
 
 
+def to_html(data: dict) -> str:
+    hit, total = edge_coverage(data)
+    pct = (hit / total * 100) if total else 0.0
+    mermaid = to_mermaid(data)
+    return f"""<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{data['service']} coverage</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<style>
+  body {{ font-family: sans-serif; margin: 2rem; }}
+  h1 {{ margin-bottom: 0; }}
+  p.desc {{ color: #555; margin-top: 0.25rem; }}
+  p.stats {{ font-weight: bold; }}
+</style>
+</head>
+<body>
+<h1>{data['service']}</h1>
+<p class="desc">{data.get('description', '')}</p>
+<p class="stats">Edge coverage: {hit}/{total} ({pct:.0f}%) &mdash; solid = covered, dashed = not covered</p>
+<pre class="mermaid">
+{mermaid}
+</pre>
+<script>mermaid.initialize({{startOnLoad: true}});</script>
+</body>
+</html>
+"""
+
+
 def iter_service_files(names: list[str]) -> list[pathlib.Path]:
     if not names:
         return sorted(SERVICES_DIR.glob("*.yaml"))
@@ -90,13 +120,20 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Coverage report over service decision graphs")
     parser.add_argument("service", nargs="*", help="service id(s), e.g. at-erw (default: all)")
     parser.add_argument("--mermaid", action="store_true", help="print a Mermaid flowchart instead of the report")
+    parser.add_argument("--html", metavar="DIR", help="write a viewable HTML flowchart per service into DIR instead of printing")
     args = parser.parse_args()
 
     for path in iter_service_files(args.service):
         if not path.exists():
             sys.exit(f"no such service file: {path}")
         data = load(path)
-        if args.mermaid:
+        if args.html:
+            out_dir = pathlib.Path(args.html)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = out_dir / f"{data['service']}.html"
+            out_path.write_text(to_html(data))
+            print(f"wrote {out_path}")
+        elif args.mermaid:
             print(to_mermaid(data))
         else:
             print_report(data)

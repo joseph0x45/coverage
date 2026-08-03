@@ -68,16 +68,17 @@ each file small and diffable regardless of how large the whole suite gets.
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
-.venv/bin/python3 build.py                 # report for every service
-.venv/bin/python3 build.py at-erw           # report for one service
-.venv/bin/python3 build.py at-erw --mermaid # emit a Mermaid flowchart instead
+.venv/bin/python3 build.py                    # report for every service
+.venv/bin/python3 build.py at-erw              # report for one service
+.venv/bin/python3 build.py at-erw --mermaid    # print raw Mermaid syntax
+.venv/bin/python3 build.py at-erw --html out   # write out/at-erw.html, open it in a browser
 ```
 
 The report prints edge coverage (`hit/total`, %) and a branch-gap table:
 decision points where some but not all outgoing choices are marked
-`covered: true` — the thing a flat list hides completely. `--mermaid`
-renders the same graph as a flowchart (solid arrow = covered, dashed =
-not), so there's no separate diagram to keep in sync by hand.
+`covered: true` — the thing a flat list hides completely. `--html` writes
+an actual page you can open locally (solid arrow = covered, dashed = not),
+so there's no separate diagram to keep in sync by hand.
 
 ## Workflow
 
