@@ -22,8 +22,8 @@ edges:
   - from: residence_document
     to: upload_residence_title
     choice: residence_title
-    covered: false
+    covered: true
   - from: residence_document
     to: upload_letter_of_recognition
     choice: letter_of_recognition
-    covered: false
+    covered: true
