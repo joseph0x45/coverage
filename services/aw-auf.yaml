@@ -1,0 +1,93 @@
+service: aw-auf
+description: >
+  Aufenthaltskarte — residence card for EU/EEA citizens and their family
+  members (persons entitled to freedom of movement).
+
+nodes:
+  application_type:
+    type: decision
+    label: Please select your request
+
+  nationality_group:
+    type: decision
+    label: I have the nationality...
+  blocked_switzerland:
+    type: leaf
+    label: Service blocked — Swiss nationality
+  blocked_non_eu_eea:
+    type: leaf
+    label: Service blocked — nationality outside the EU/EEA
+
+  stay_duration:
+    type: decision
+    label: How long have you been staying in Germany?
+
+  currently_employed:
+    type: decision
+    label: >
+      (less than five years in Germany) Are you currently employed?
+  employed_no:
+    type: leaf
+    label: Not employed — separate question tree, not yet built
+
+  employment_location:
+    type: decision
+    label: Are you employed in Germany or another country?
+  blocked_employed_germany:
+    type: leaf
+    label: Service blocked — employed in Germany
+  blocked_employed_other_country:
+    type: leaf
+    label: Service blocked — employed outside the EU/EEA
+
+  prior_work_duration:
+    type: decision
+    label: How long have you previously worked in Germany without interruption?
+  blocked_short_prior_work:
+    type: leaf
+    label: Service blocked — less than three years of prior uninterrupted work
+
+  residence_in_germany:
+    type: decision
+    label: Do you still have a residence in Germany?
+  blocked_residence_no_weekly_return:
+    type: leaf
+    label: Service blocked — residence kept but no weekly return to Germany
+  blocked_no_residence:
+    type: leaf
+    label: Service blocked — no residence kept in Germany
+
+  stays_and_absences_page:
+    type: leaf
+    label: Reach the "Stays and absences" page — not yet built further
+
+  ak_not_built:
+    type: leaf
+    label: >
+      Family member of an EU/EEA citizen requesting a residence card —
+      branch not yet built
+
+edges:
+  - {from: application_type, to: nationality_group, choice: DAB, covered: false}
+  - {from: application_type, to: ak_not_built, choice: AK, covered: false}
+
+  - {from: nationality_group, to: stay_duration, choice: eu, covered: false}
+  - {from: nationality_group, to: blocked_switzerland, choice: schweiz, covered: false}
+  - {from: nationality_group, to: blocked_non_eu_eea, choice: not_eu, covered: false}
+
+  - {from: stay_duration, to: stays_and_absences_page, choice: more_than_five, covered: false}
+  - {from: stay_duration, to: currently_employed, choice: less_than_five, covered: false}
+
+  - {from: currently_employed, to: employment_location, choice: "yes", covered: false}
+  - {from: currently_employed, to: employed_no, choice: "no", covered: false}
+
+  - {from: employment_location, to: blocked_employed_germany, choice: germany, covered: false}
+  - {from: employment_location, to: prior_work_duration, choice: eu_country, covered: false}
+  - {from: employment_location, to: blocked_employed_other_country, choice: other_country, covered: false}
+
+  - {from: prior_work_duration, to: residence_in_germany, choice: more_than_three, covered: false}
+  - {from: prior_work_duration, to: blocked_short_prior_work, choice: less_than_three, covered: false}
+
+  - {from: residence_in_germany, to: stays_and_absences_page, choice: yes_mit_rueckkehr, covered: false}
+  - {from: residence_in_germany, to: blocked_residence_no_weekly_return, choice: yes_ohne_rueckkehr, covered: false}
+  - {from: residence_in_germany, to: blocked_no_residence, choice: "no", covered: false}
