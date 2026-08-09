@@ -26,9 +26,58 @@ nodes:
     type: decision
     label: >
       (less than five years in Germany) Are you currently employed?
-  employed_no:
+
+  previously_employed:
+    type: decision
+    label: Have you previously been employed in Germany or another EU/EEC country?
+  blocked_never_employed:
     type: leaf
-    label: Not employed — separate question tree, not yet built
+    label: Service blocked — never employed in Germany or another EU/EEC country
+
+  retirement_reason:
+    type: decision
+    label: Why have you retired from working life?
+  retirement_reason_accident_not_built:
+    type: leaf
+    label: >
+      Retired due to a full reduction in earning capacity caused by an
+      accident at work or occupational illness — not yet built
+  retirement_reason_reduced_capacity_not_built:
+    type: leaf
+    label: Retired due to a full reduction in earning capacity — not yet built
+  blocked_no_retirement_reason_applies:
+    type: leaf
+    label: Service blocked — none of the retirement-reason statements apply
+
+  resident_three_years:
+    type: decision
+    label: >
+      Have you been continuously resident in German federal territory for
+      at least three years?
+  resident_three_years_no_not_built:
+    type: leaf
+    label: Not continuously resident for three years — not yet built
+
+  employed_last_12_months:
+    type: decision
+    label: >
+      Have you engaged in any employment in German federal territory in
+      the last twelve months?
+
+  spouse_is_german_national:
+    type: decision
+    label: Is your spouse or civil partner a German national?
+
+  spouse_lost_german_citizenship:
+    type: decision
+    label: >
+      Did your spouse or partner lose German citizenship by marrying you
+      before 31 March 1953?
+  blocked_spouse_citizenship:
+    type: leaf
+    label: >
+      Service blocked — spouse/partner did not lose German citizenship by
+      marrying before 31 March 1953
 
   employment_location:
     type: decision
@@ -79,7 +128,27 @@ edges:
   - {from: stay_duration, to: currently_employed, choice: less_than_five, covered: false}
 
   - {from: currently_employed, to: employment_location, choice: "yes", covered: false}
-  - {from: currently_employed, to: employed_no, choice: "no", covered: false}
+  - {from: currently_employed, to: previously_employed, choice: "no", covered: false}
+
+  - {from: previously_employed, to: retirement_reason, choice: "yes", covered: false}
+  - {from: previously_employed, to: blocked_never_employed, choice: "no", covered: false}
+
+  - {from: retirement_reason, to: resident_three_years, choice: ruhestand, covered: false}
+  - {from: retirement_reason, to: retirement_reason_accident_not_built, choice: unfall, covered: false}
+  - {from: retirement_reason, to: retirement_reason_reduced_capacity_not_built, choice: erwerbsminderung, covered: false}
+  - {from: retirement_reason, to: blocked_no_retirement_reason_applies, choice: andere, covered: false}
+
+  - {from: resident_three_years, to: employed_last_12_months, choice: "yes", covered: false}
+  - {from: resident_three_years, to: resident_three_years_no_not_built, choice: "no", covered: false}
+
+  - {from: employed_last_12_months, to: stays_and_absences_page, choice: "yes", covered: false}
+  - {from: employed_last_12_months, to: spouse_is_german_national, choice: "no", covered: false}
+
+  - {from: spouse_is_german_national, to: stays_and_absences_page, choice: "yes", covered: false}
+  - {from: spouse_is_german_national, to: spouse_lost_german_citizenship, choice: "no", covered: false}
+
+  - {from: spouse_lost_german_citizenship, to: stays_and_absences_page, choice: "yes", covered: false}
+  - {from: spouse_lost_german_citizenship, to: blocked_spouse_citizenship, choice: "no", covered: false}
 
   - {from: employment_location, to: blocked_employed_germany, choice: germany, covered: false}
   - {from: employment_location, to: prior_work_duration, choice: eu_country, covered: false}

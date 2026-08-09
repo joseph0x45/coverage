@@ -7,4 +7,4 @@ title: SQM service coverage
 
 - [at-erw](at-erw.md) — 0/23 edges covered (0%)
 - [at-neb](at-neb.md) — 2/2 edges covered (100%)
-- [aw-auf](aw-auf.md) — 0/17 edges covered (0%)
+- [aw-auf](aw-auf.md) — 0/31 edges covered (0%)
