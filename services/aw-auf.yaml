@@ -140,9 +140,29 @@ nodes:
   message_about:
     type: decision
     label: What is your message about?
-  message_about_ehe_not_built:
+  freizuegigkeitsvoraussetzungen:
+    type: decision
+    label: >
+      (marriage/civil partnership dissolved) Do any of the following
+      statements apply to you?
+  blocked_freizuegigkeitsvoraussetzungen_none:
     type: leaf
-    label: Marriage/civil partnership dissolved — not yet built
+    label: Service blocked — none of the statements apply
+
+  ausnahmetatbestaende:
+    type: decision
+    label: Do any of the following statements apply to you? (exception grounds)
+  blocked_ausnahmetatbestaende_none:
+    type: leaf
+    label: Service blocked — none of the statements apply
+
+  permanently_resident_five_years:
+    type: decision
+    label: Have you been permanently resident in Germany for five years?
+  stays_and_absences_via_ehe_lebenspartnerschaft:
+    type: leaf
+    label: Continues into the shared flow (acting person onward - same for both request types)
+
   message_about_fortzug_not_built:
     type: leaf
     label: Reference person moved away from Germany — not yet built
@@ -283,10 +303,25 @@ edges:
   - {from: holds_residence_card, to: holds_residence_card_no_not_built, choice: "no", covered: false}
 
   - {from: message_about, to: residence_permit_five_years, choice: neue_ak_oder_dak, covered: false}
-  - {from: message_about, to: message_about_ehe_not_built, choice: ehe_lebenspartnerschaft, covered: false}
+  - {from: message_about, to: freizuegigkeitsvoraussetzungen, choice: ehe_lebenspartnerschaft, covered: false}
   - {from: message_about, to: message_about_fortzug_not_built, choice: fortzug_der_bezugsperson, covered: false}
   - {from: message_about, to: message_about_tod_not_built, choice: tod_der_bezugsperson, covered: false}
   - {from: message_about, to: message_about_rechts_not_built, choice: rechts_bezugsperson, covered: false}
+
+  - {from: freizuegigkeitsvoraussetzungen, to: ausnahmetatbestaende, choice: arbeitnehmer_azubi, covered: false}
+  - {from: freizuegigkeitsvoraussetzungen, to: ausnahmetatbestaende, choice: arbeitssuchend, covered: false}
+  - {from: freizuegigkeitsvoraussetzungen, to: ausnahmetatbestaende, choice: selbststaendig, covered: false}
+  - {from: freizuegigkeitsvoraussetzungen, to: ausnahmetatbestaende, choice: nicht_erwerbstaetig, covered: false}
+  - {from: freizuegigkeitsvoraussetzungen, to: blocked_freizuegigkeitsvoraussetzungen_none, choice: keine, covered: false}
+
+  - {from: ausnahmetatbestaende, to: permanently_resident_five_years, choice: dauer_der_ehe, covered: false}
+  - {from: ausnahmetatbestaende, to: permanently_resident_five_years, choice: kind_der_ehem_bezugsperson, covered: false}
+  - {from: ausnahmetatbestaende, to: permanently_resident_five_years, choice: umgangsrecht_fuer_kind, covered: false}
+  - {from: ausnahmetatbestaende, to: permanently_resident_five_years, choice: besondere_haerte, covered: false}
+  - {from: ausnahmetatbestaende, to: blocked_ausnahmetatbestaende_none, choice: keine, covered: false}
+
+  - {from: permanently_resident_five_years, to: stays_and_absences_via_ehe_lebenspartnerschaft, choice: "yes", covered: false}
+  - {from: permanently_resident_five_years, to: stays_and_absences_via_ehe_lebenspartnerschaft, choice: "no", covered: false}
 
   - {from: residence_permit_five_years, to: resided_five_years_with_reference_person, choice: "yes", covered: false}
   - {from: residence_permit_five_years, to: residence_permit_five_years_no_not_built, choice: "no", covered: false}

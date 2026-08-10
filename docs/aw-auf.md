@@ -7,7 +7,7 @@ title: aw-auf
 
 Aufenthaltskarte — residence card for EU/EEA citizens and their family members (persons entitled to freedom of movement).
 
-**Edge coverage:** 0/71 (0%) — solid arrow = covered, dashed = not covered
+**Edge coverage:** 0/83 (0%) — solid arrow = covered, dashed = not covered
 
 ```mermaid
 flowchart TD
@@ -47,7 +47,12 @@ flowchart TD
     holds_residence_card{"Do you already hold a residence card from a German Foreigners Registration Office?"}
     holds_residence_card_no_not_built["Not yet built"]
     message_about{"What is your message about?"}
-    message_about_ehe_not_built["Marriage/civil partnership dissolved — not yet built"]
+    freizuegigkeitsvoraussetzungen{"(marriage/civil partnership dissolved) Do any of the following statements apply to you?"}
+    blocked_freizuegigkeitsvoraussetzungen_none["Service blocked — none of the statements apply"]
+    ausnahmetatbestaende{"Do any of the following statements apply to you? (exception grounds)"}
+    blocked_ausnahmetatbestaende_none["Service blocked — none of the statements apply"]
+    permanently_resident_five_years{"Have you been permanently resident in Germany for five years?"}
+    stays_and_absences_via_ehe_lebenspartnerschaft["Continues into the shared flow (acting person onward - same for both request types)"]
     message_about_fortzug_not_built["Reference person moved away from Germany — not yet built"]
     message_about_tod_not_built["Reference person died — not yet built"]
     message_about_rechts_not_built["Reference person obtained permanent right of residence 5 years ago — not yet built"]
@@ -108,10 +113,22 @@ flowchart TD
     holds_residence_card -.->|"yes"| message_about
     holds_residence_card -.->|"no"| holds_residence_card_no_not_built
     message_about -.->|"neue_ak_oder_dak"| residence_permit_five_years
-    message_about -.->|"ehe_lebenspartnerschaft"| message_about_ehe_not_built
+    message_about -.->|"ehe_lebenspartnerschaft"| freizuegigkeitsvoraussetzungen
     message_about -.->|"fortzug_der_bezugsperson"| message_about_fortzug_not_built
     message_about -.->|"tod_der_bezugsperson"| message_about_tod_not_built
     message_about -.->|"rechts_bezugsperson"| message_about_rechts_not_built
+    freizuegigkeitsvoraussetzungen -.->|"arbeitnehmer_azubi"| ausnahmetatbestaende
+    freizuegigkeitsvoraussetzungen -.->|"arbeitssuchend"| ausnahmetatbestaende
+    freizuegigkeitsvoraussetzungen -.->|"selbststaendig"| ausnahmetatbestaende
+    freizuegigkeitsvoraussetzungen -.->|"nicht_erwerbstaetig"| ausnahmetatbestaende
+    freizuegigkeitsvoraussetzungen -.->|"keine"| blocked_freizuegigkeitsvoraussetzungen_none
+    ausnahmetatbestaende -.->|"dauer_der_ehe"| permanently_resident_five_years
+    ausnahmetatbestaende -.->|"kind_der_ehem_bezugsperson"| permanently_resident_five_years
+    ausnahmetatbestaende -.->|"umgangsrecht_fuer_kind"| permanently_resident_five_years
+    ausnahmetatbestaende -.->|"besondere_haerte"| permanently_resident_five_years
+    ausnahmetatbestaende -.->|"keine"| blocked_ausnahmetatbestaende_none
+    permanently_resident_five_years -.->|"yes"| stays_and_absences_via_ehe_lebenspartnerschaft
+    permanently_resident_five_years -.->|"no"| stays_and_absences_via_ehe_lebenspartnerschaft
     residence_permit_five_years -.->|"yes"| resided_five_years_with_reference_person
     residence_permit_five_years -.->|"no"| residence_permit_five_years_no_not_built
     resided_five_years_with_reference_person -.->|"yes"| stays_and_absences_via_five_year_permit
@@ -162,6 +179,9 @@ flowchart TD
 - `residence_in_germany` (0/3 covered): missing yes_mit_rueckkehr, yes_ohne_rueckkehr, no
 - `holds_residence_card` (0/2 covered): missing yes, no
 - `message_about` (0/5 covered): missing neue_ak_oder_dak, ehe_lebenspartnerschaft, fortzug_der_bezugsperson, tod_der_bezugsperson, rechts_bezugsperson
+- `freizuegigkeitsvoraussetzungen` (0/5 covered): missing arbeitnehmer_azubi, arbeitssuchend, selbststaendig, nicht_erwerbstaetig, keine
+- `ausnahmetatbestaende` (0/5 covered): missing dauer_der_ehe, kind_der_ehem_bezugsperson, umgangsrecht_fuer_kind, besondere_haerte, keine
+- `permanently_resident_five_years` (0/2 covered): missing yes, no
 - `residence_permit_five_years` (0/2 covered): missing yes, no
 - `resided_five_years_with_reference_person` (0/2 covered): missing yes, no
 - `continue_staying_with_reference_person` (0/2 covered): missing yes, no
