@@ -22,9 +22,9 @@ flowchart TD
     retirement_reason{"Why have you retired from working life?"}
     disability_pension{"Are you entitled to a disability pension within German federal territory?"}
     blocked_no_disability_pension["Service blocked — not entitled to a disability pension within German federal territory"]
-    stays_and_absences_via_disability_pension["Reach the 'Personal details' page — not yet built further"]
+    stays_and_absences_via_disability_pension["Continues into the shared flow (acting person onward - same for both request types)"]
     resident_two_years{"Have you been continuously resident in German federal territory for at least two years?"}
-    stays_and_absences_via_two_years["Reach the 'Personal details' page — not yet built further"]
+    stays_and_absences_via_two_years["Continues into the shared flow (acting person onward - same for both request types)"]
     blocked_no_retirement_reason_applies["Service blocked — none of the retirement-reason statements apply"]
     resident_three_years{"Have you been continuously resident in German federal territory for at least three years?"}
     employed_last_12_months{"Have you engaged in any employment in German federal territory in the last twelve months?"}
@@ -39,11 +39,11 @@ flowchart TD
     residence_in_germany{"Do you still have a residence in Germany?"}
     blocked_residence_no_weekly_return["Service blocked — residence kept but no weekly return to Germany"]
     blocked_no_residence["Service blocked — no residence kept in Germany"]
-    stays_and_absences_via_five_years["Reach the 'Personal details' page — not yet built further"]
-    stays_and_absences_via_residence["Reach the 'Personal details' page — not yet built further"]
-    stays_and_absences_via_recent_employment["Reach the 'Personal details' page — not yet built further"]
-    stays_and_absences_via_german_spouse["Reach the 'Personal details' page — not yet built further"]
-    stays_and_absences_via_former_german_spouse["Reach the 'Personal details' page — not yet built further"]
+    stays_and_absences_via_five_years["Continues into the shared flow (acting person onward - same for both request types)"]
+    stays_and_absences_via_residence["Continues into the shared flow (acting person onward - same for both request types)"]
+    stays_and_absences_via_recent_employment["Continues into the shared flow (acting person onward - same for both request types)"]
+    stays_and_absences_via_german_spouse["Continues into the shared flow (acting person onward - same for both request types)"]
+    stays_and_absences_via_former_german_spouse["Continues into the shared flow (acting person onward - same for both request types)"]
     ak_not_built["Family member of an EU/EEA citizen requesting a residence card — branch not yet built"]
     application_type -.->|"DAB"| nationality_group
     application_type -.->|"AK"| ak_not_built
