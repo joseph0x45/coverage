@@ -262,9 +262,17 @@ nodes:
     type: leaf
     label: Continues into the shared flow (acting person onward - same for both request types)
 
-  message_about_rechts_not_built:
+  resides_with_reference_person_all_time:
+    type: decision
+    label: >
+      (reference person obtained permanent right of residence 5 years
+      ago) Do you reside with your reference person all the time?
+  blocked_not_resides_all_time:
     type: leaf
-    label: Reference person obtained permanent right of residence 5 years ago — not yet built
+    label: Service blocked — does not reside with reference person all the time
+  stays_and_absences_via_rechts_bezugsperson:
+    type: leaf
+    label: Continues into the shared flow (acting person onward - same for both request types)
 
   residence_permit_five_years:
     type: decision
@@ -399,7 +407,10 @@ edges:
   - {from: message_about, to: freizuegigkeitsvoraussetzungen, choice: ehe_lebenspartnerschaft, covered: false}
   - {from: message_about, to: fortzug_reason, choice: fortzug_der_bezugsperson, covered: false}
   - {from: message_about, to: fortbestand_aufenthaltsrecht_im_todesfall, choice: tod_der_bezugsperson, covered: false}
-  - {from: message_about, to: message_about_rechts_not_built, choice: rechts_bezugsperson, covered: false}
+  - {from: message_about, to: resides_with_reference_person_all_time, choice: rechts_bezugsperson, covered: false}
+
+  - {from: resides_with_reference_person_all_time, to: stays_and_absences_via_rechts_bezugsperson, choice: "yes", covered: false}
+  - {from: resides_with_reference_person_all_time, to: blocked_not_resides_all_time, choice: "no", covered: false}
 
   - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: reference_person_had_freedom_of_movement_right, choice: mind_2_jaehriger, covered: false}
   - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: reference_person_had_freedom_of_movement_right, choice: arbeitsunfall, covered: false}

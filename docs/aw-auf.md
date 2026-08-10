@@ -7,7 +7,7 @@ title: aw-auf
 
 Aufenthaltskarte — residence card for EU/EEA citizens and their family members (persons entitled to freedom of movement).
 
-**Edge coverage:** 0/115 (0%) — solid arrow = covered, dashed = not covered
+**Edge coverage:** 0/117 (0%) — solid arrow = covered, dashed = not covered
 
 ```mermaid
 flowchart TD
@@ -77,7 +77,9 @@ flowchart TD
     resided_with_reference_person_at_death{"Were you permanently residing with your reference person at the time of death?"}
     blocked_not_resided_at_death["Service blocked — not permanently residing with reference person at time of death"]
     stays_and_absences_via_death["Continues into the shared flow (acting person onward - same for both request types)"]
-    message_about_rechts_not_built["Reference person obtained permanent right of residence 5 years ago — not yet built"]
+    resides_with_reference_person_all_time{"(reference person obtained permanent right of residence 5 years ago) Do you reside with your reference person all the time?"}
+    blocked_not_resides_all_time["Service blocked — does not reside with reference person all the time"]
+    stays_and_absences_via_rechts_bezugsperson["Continues into the shared flow (acting person onward - same for both request types)"]
     residence_permit_five_years{"Have you been in possession of a residence permit for five years?"}
     residence_permit_five_years_no_not_built["Not yet built"]
     resided_five_years_with_reference_person{"Have you continuously resided in Germany with your reference person for five years?"}
@@ -138,7 +140,9 @@ flowchart TD
     message_about -.->|"ehe_lebenspartnerschaft"| freizuegigkeitsvoraussetzungen
     message_about -.->|"fortzug_der_bezugsperson"| fortzug_reason
     message_about -.->|"tod_der_bezugsperson"| fortbestand_aufenthaltsrecht_im_todesfall
-    message_about -.->|"rechts_bezugsperson"| message_about_rechts_not_built
+    message_about -.->|"rechts_bezugsperson"| resides_with_reference_person_all_time
+    resides_with_reference_person_all_time -.->|"yes"| stays_and_absences_via_rechts_bezugsperson
+    resides_with_reference_person_all_time -.->|"no"| blocked_not_resides_all_time
     fortbestand_aufenthaltsrecht_im_todesfall -.->|"mind_2_jaehriger"| reference_person_had_freedom_of_movement_right
     fortbestand_aufenthaltsrecht_im_todesfall -.->|"arbeitsunfall"| reference_person_had_freedom_of_movement_right
     fortbestand_aufenthaltsrecht_im_todesfall -.->|"eheschliessung"| reference_person_had_freedom_of_movement_right
@@ -248,6 +252,7 @@ flowchart TD
 - `resided_one_year_before_death` (0/2 covered): missing yes, no
 - `reference_person_had_freedom_of_movement_right` (0/2 covered): missing yes, no
 - `resided_with_reference_person_at_death` (0/2 covered): missing yes, no
+- `resides_with_reference_person_all_time` (0/2 covered): missing yes, no
 - `residence_permit_five_years` (0/2 covered): missing yes, no
 - `resided_five_years_with_reference_person` (0/2 covered): missing yes, no
 - `continue_staying_with_reference_person` (0/2 covered): missing yes, no
