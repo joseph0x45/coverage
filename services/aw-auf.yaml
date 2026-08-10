@@ -282,9 +282,6 @@ nodes:
   residence_permit_five_years:
     type: decision
     label: Have you been in possession of a residence permit for five years?
-  residence_permit_five_years_no_not_built:
-    type: leaf
-    label: Not yet built
 
   resided_five_years_with_reference_person:
     type: decision
@@ -483,7 +480,7 @@ edges:
   - {from: permanently_resident_five_years, to: stays_and_absences_via_ehe_lebenspartnerschaft, choice: "no", covered: false}
 
   - {from: residence_permit_five_years, to: resided_five_years_with_reference_person, choice: "yes", covered: false}
-  - {from: residence_permit_five_years, to: residence_permit_five_years_no_not_built, choice: "no", covered: false}
+  - {from: residence_permit_five_years, to: continue_staying_with_reference_person, choice: "no", covered: false}
 
   - {from: resided_five_years_with_reference_person, to: stays_and_absences_via_five_year_permit, choice: "yes", covered: false}
   - {from: resided_five_years_with_reference_person, to: continue_staying_with_reference_person, choice: "no", covered: false}
