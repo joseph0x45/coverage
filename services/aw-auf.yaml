@@ -106,7 +106,19 @@ nodes:
     type: leaf
     label: Service blocked — no residence kept in Germany
 
-  stays_and_absences_page:
+  stays_and_absences_via_five_years:
+    type: leaf
+    label: Reach the "Stays and absences" page — not yet built further
+  stays_and_absences_via_residence:
+    type: leaf
+    label: Reach the "Stays and absences" page — not yet built further
+  stays_and_absences_via_recent_employment:
+    type: leaf
+    label: Reach the "Stays and absences" page — not yet built further
+  stays_and_absences_via_german_spouse:
+    type: leaf
+    label: Reach the "Stays and absences" page — not yet built further
+  stays_and_absences_via_former_german_spouse:
     type: leaf
     label: Reach the "Stays and absences" page — not yet built further
 
@@ -124,7 +136,7 @@ edges:
   - {from: nationality_group, to: blocked_switzerland, choice: schweiz, covered: false}
   - {from: nationality_group, to: blocked_non_eu_eea, choice: not_eu, covered: false}
 
-  - {from: stay_duration, to: stays_and_absences_page, choice: more_than_five, covered: false}
+  - {from: stay_duration, to: stays_and_absences_via_five_years, choice: more_than_five, covered: false}
   - {from: stay_duration, to: currently_employed, choice: less_than_five, covered: false}
 
   - {from: currently_employed, to: employment_location, choice: "yes", covered: false}
@@ -141,13 +153,13 @@ edges:
   - {from: resident_three_years, to: employed_last_12_months, choice: "yes", covered: false}
   - {from: resident_three_years, to: resident_three_years_no_not_built, choice: "no", covered: false}
 
-  - {from: employed_last_12_months, to: stays_and_absences_page, choice: "yes", covered: false}
+  - {from: employed_last_12_months, to: stays_and_absences_via_recent_employment, choice: "yes", covered: false}
   - {from: employed_last_12_months, to: spouse_is_german_national, choice: "no", covered: false}
 
-  - {from: spouse_is_german_national, to: stays_and_absences_page, choice: "yes", covered: false}
+  - {from: spouse_is_german_national, to: stays_and_absences_via_german_spouse, choice: "yes", covered: false}
   - {from: spouse_is_german_national, to: spouse_lost_german_citizenship, choice: "no", covered: false}
 
-  - {from: spouse_lost_german_citizenship, to: stays_and_absences_page, choice: "yes", covered: false}
+  - {from: spouse_lost_german_citizenship, to: stays_and_absences_via_former_german_spouse, choice: "yes", covered: false}
   - {from: spouse_lost_german_citizenship, to: blocked_spouse_citizenship, choice: "no", covered: false}
 
   - {from: employment_location, to: blocked_employed_germany, choice: germany, covered: false}
@@ -157,6 +169,6 @@ edges:
   - {from: prior_work_duration, to: residence_in_germany, choice: more_than_three, covered: false}
   - {from: prior_work_duration, to: blocked_short_prior_work, choice: less_than_three, covered: false}
 
-  - {from: residence_in_germany, to: stays_and_absences_page, choice: yes_mit_rueckkehr, covered: false}
+  - {from: residence_in_germany, to: stays_and_absences_via_residence, choice: yes_mit_rueckkehr, covered: false}
   - {from: residence_in_germany, to: blocked_residence_no_weekly_return, choice: yes_ohne_rueckkehr, covered: false}
   - {from: residence_in_germany, to: blocked_no_residence, choice: "no", covered: false}

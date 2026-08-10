@@ -37,14 +37,18 @@ flowchart TD
     residence_in_germany{"Do you still have a residence in Germany?"}
     blocked_residence_no_weekly_return["Service blocked — residence kept but no weekly return to Germany"]
     blocked_no_residence["Service blocked — no residence kept in Germany"]
-    stays_and_absences_page["Reach the 'Stays and absences' page — not yet built further"]
+    stays_and_absences_via_five_years["Reach the 'Stays and absences' page — not yet built further"]
+    stays_and_absences_via_residence["Reach the 'Stays and absences' page — not yet built further"]
+    stays_and_absences_via_recent_employment["Reach the 'Stays and absences' page — not yet built further"]
+    stays_and_absences_via_german_spouse["Reach the 'Stays and absences' page — not yet built further"]
+    stays_and_absences_via_former_german_spouse["Reach the 'Stays and absences' page — not yet built further"]
     ak_not_built["Family member of an EU/EEA citizen requesting a residence card — branch not yet built"]
     application_type -.->|"DAB"| nationality_group
     application_type -.->|"AK"| ak_not_built
     nationality_group -.->|"eu"| stay_duration
     nationality_group -.->|"schweiz"| blocked_switzerland
     nationality_group -.->|"not_eu"| blocked_non_eu_eea
-    stay_duration -.->|"more_than_five"| stays_and_absences_page
+    stay_duration -.->|"more_than_five"| stays_and_absences_via_five_years
     stay_duration -.->|"less_than_five"| currently_employed
     currently_employed -.->|"yes"| employment_location
     currently_employed -.->|"no"| previously_employed
@@ -56,18 +60,18 @@ flowchart TD
     retirement_reason -.->|"andere"| blocked_no_retirement_reason_applies
     resident_three_years -.->|"yes"| employed_last_12_months
     resident_three_years -.->|"no"| resident_three_years_no_not_built
-    employed_last_12_months -.->|"yes"| stays_and_absences_page
+    employed_last_12_months -.->|"yes"| stays_and_absences_via_recent_employment
     employed_last_12_months -.->|"no"| spouse_is_german_national
-    spouse_is_german_national -.->|"yes"| stays_and_absences_page
+    spouse_is_german_national -.->|"yes"| stays_and_absences_via_german_spouse
     spouse_is_german_national -.->|"no"| spouse_lost_german_citizenship
-    spouse_lost_german_citizenship -.->|"yes"| stays_and_absences_page
+    spouse_lost_german_citizenship -.->|"yes"| stays_and_absences_via_former_german_spouse
     spouse_lost_german_citizenship -.->|"no"| blocked_spouse_citizenship
     employment_location -.->|"germany"| blocked_employed_germany
     employment_location -.->|"eu_country"| prior_work_duration
     employment_location -.->|"other_country"| blocked_employed_other_country
     prior_work_duration -.->|"more_than_three"| residence_in_germany
     prior_work_duration -.->|"less_than_three"| blocked_short_prior_work
-    residence_in_germany -.->|"yes_mit_rueckkehr"| stays_and_absences_page
+    residence_in_germany -.->|"yes_mit_rueckkehr"| stays_and_absences_via_residence
     residence_in_germany -.->|"yes_ohne_rueckkehr"| blocked_residence_no_weekly_return
     residence_in_germany -.->|"no"| blocked_no_residence
 ```
