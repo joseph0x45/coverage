@@ -133,9 +133,14 @@ nodes:
   holds_residence_card:
     type: decision
     label: Do you already hold a residence card from a German Foreigners Registration Office?
-  holds_residence_card_no_not_built:
-    type: leaf
-    label: Not yet built
+
+  has_visa:
+    type: decision
+    label: Do you have a visa from a German embassy or consulate abroad?
+
+  has_foreign_residence_card:
+    type: decision
+    label: Do you have a valid residence card of another EU or EEA state?
 
   message_about:
     type: decision
@@ -401,7 +406,13 @@ edges:
   - {from: residence_in_germany, to: blocked_no_residence, choice: "no", covered: false}
 
   - {from: holds_residence_card, to: message_about, choice: "yes", covered: false}
-  - {from: holds_residence_card, to: holds_residence_card_no_not_built, choice: "no", covered: false}
+  - {from: holds_residence_card, to: has_visa, choice: "no", covered: false}
+
+  - {from: has_visa, to: reference_person_citizenship, choice: "yes", covered: false}
+  - {from: has_visa, to: has_foreign_residence_card, choice: "no", covered: false}
+
+  - {from: has_foreign_residence_card, to: reference_person_citizenship, choice: "yes", covered: false}
+  - {from: has_foreign_residence_card, to: reference_person_citizenship, choice: "no", covered: false}
 
   - {from: message_about, to: residence_permit_five_years, choice: neue_ak_oder_dak, covered: false}
   - {from: message_about, to: freizuegigkeitsvoraussetzungen, choice: ehe_lebenspartnerschaft, covered: false}
