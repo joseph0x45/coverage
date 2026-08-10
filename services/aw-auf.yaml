@@ -54,9 +54,6 @@ nodes:
     label: >
       Have you been continuously resident in German federal territory for
       at least three years?
-  resident_three_years_no_not_built:
-    type: leaf
-    label: Not continuously resident for three years — not yet built
 
   employed_last_12_months:
     type: decision
@@ -151,7 +148,7 @@ edges:
   - {from: retirement_reason, to: blocked_no_retirement_reason_applies, choice: andere, covered: false}
 
   - {from: resident_three_years, to: employed_last_12_months, choice: "yes", covered: false}
-  - {from: resident_three_years, to: resident_three_years_no_not_built, choice: "no", covered: false}
+  - {from: resident_three_years, to: spouse_is_german_national, choice: "no", covered: false}
 
   - {from: employed_last_12_months, to: stays_and_absences_via_recent_employment, choice: "yes", covered: false}
   - {from: employed_last_12_months, to: spouse_is_german_national, choice: "no", covered: false}

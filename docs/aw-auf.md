@@ -24,7 +24,6 @@ flowchart TD
     retirement_reason_reduced_capacity_not_built["Retired due to a full reduction in earning capacity — not yet built"]
     blocked_no_retirement_reason_applies["Service blocked — none of the retirement-reason statements apply"]
     resident_three_years{"Have you been continuously resident in German federal territory for at least three years?"}
-    resident_three_years_no_not_built["Not continuously resident for three years — not yet built"]
     employed_last_12_months{"Have you engaged in any employment in German federal territory in the last twelve months?"}
     spouse_is_german_national{"Is your spouse or civil partner a German national?"}
     spouse_lost_german_citizenship{"Did your spouse or partner lose German citizenship by marrying you before 31 March 1953?"}
@@ -59,7 +58,7 @@ flowchart TD
     retirement_reason -.->|"erwerbsminderung"| retirement_reason_reduced_capacity_not_built
     retirement_reason -.->|"andere"| blocked_no_retirement_reason_applies
     resident_three_years -.->|"yes"| employed_last_12_months
-    resident_three_years -.->|"no"| resident_three_years_no_not_built
+    resident_three_years -.->|"no"| spouse_is_german_national
     employed_last_12_months -.->|"yes"| stays_and_absences_via_recent_employment
     employed_last_12_months -.->|"no"| spouse_is_german_national
     spouse_is_german_national -.->|"yes"| stays_and_absences_via_german_spouse
