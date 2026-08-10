@@ -7,7 +7,7 @@ title: aw-auf
 
 Aufenthaltskarte — residence card for EU/EEA citizens and their family members (persons entitled to freedom of movement).
 
-**Edge coverage:** 0/31 (0%) — solid arrow = covered, dashed = not covered
+**Edge coverage:** 0/33 (0%) — solid arrow = covered, dashed = not covered
 
 ```mermaid
 flowchart TD
@@ -20,7 +20,9 @@ flowchart TD
     previously_employed{"Have you previously been employed in Germany or another EU/EEC country?"}
     blocked_never_employed["Service blocked — never employed in Germany or another EU/EEC country"]
     retirement_reason{"Why have you retired from working life?"}
-    retirement_reason_accident_not_built["Retired due to a full reduction in earning capacity caused by an accident at work or occupational illness — not yet built"]
+    disability_pension{"Are you entitled to a disability pension within German federal territory?"}
+    blocked_no_disability_pension["Service blocked — not entitled to a disability pension within German federal territory"]
+    stays_and_absences_via_disability_pension["Reach the 'Stays and absences' page — not yet built further"]
     retirement_reason_reduced_capacity_not_built["Retired due to a full reduction in earning capacity — not yet built"]
     blocked_no_retirement_reason_applies["Service blocked — none of the retirement-reason statements apply"]
     resident_three_years{"Have you been continuously resident in German federal territory for at least three years?"}
@@ -54,9 +56,11 @@ flowchart TD
     previously_employed -.->|"yes"| retirement_reason
     previously_employed -.->|"no"| blocked_never_employed
     retirement_reason -.->|"ruhestand"| resident_three_years
-    retirement_reason -.->|"unfall"| retirement_reason_accident_not_built
+    retirement_reason -.->|"unfall"| disability_pension
     retirement_reason -.->|"erwerbsminderung"| retirement_reason_reduced_capacity_not_built
     retirement_reason -.->|"andere"| blocked_no_retirement_reason_applies
+    disability_pension -.->|"yes"| stays_and_absences_via_disability_pension
+    disability_pension -.->|"no"| blocked_no_disability_pension
     resident_three_years -.->|"yes"| employed_last_12_months
     resident_three_years -.->|"no"| spouse_is_german_national
     employed_last_12_months -.->|"yes"| stays_and_absences_via_recent_employment
@@ -83,6 +87,7 @@ flowchart TD
 - `currently_employed` (0/2 covered): missing yes, no
 - `previously_employed` (0/2 covered): missing yes, no
 - `retirement_reason` (0/4 covered): missing ruhestand, unfall, erwerbsminderung, andere
+- `disability_pension` (0/2 covered): missing yes, no
 - `resident_three_years` (0/2 covered): missing yes, no
 - `employed_last_12_months` (0/2 covered): missing yes, no
 - `spouse_is_german_national` (0/2 covered): missing yes, no

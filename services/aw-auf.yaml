@@ -37,11 +37,16 @@ nodes:
   retirement_reason:
     type: decision
     label: Why have you retired from working life?
-  retirement_reason_accident_not_built:
+  disability_pension:
+    type: decision
+    label: Are you entitled to a disability pension within German federal territory?
+  blocked_no_disability_pension:
     type: leaf
-    label: >
-      Retired due to a full reduction in earning capacity caused by an
-      accident at work or occupational illness — not yet built
+    label: Service blocked — not entitled to a disability pension within German federal territory
+  stays_and_absences_via_disability_pension:
+    type: leaf
+    label: Reach the "Stays and absences" page — not yet built further
+
   retirement_reason_reduced_capacity_not_built:
     type: leaf
     label: Retired due to a full reduction in earning capacity — not yet built
@@ -143,9 +148,12 @@ edges:
   - {from: previously_employed, to: blocked_never_employed, choice: "no", covered: false}
 
   - {from: retirement_reason, to: resident_three_years, choice: ruhestand, covered: false}
-  - {from: retirement_reason, to: retirement_reason_accident_not_built, choice: unfall, covered: false}
+  - {from: retirement_reason, to: disability_pension, choice: unfall, covered: false}
   - {from: retirement_reason, to: retirement_reason_reduced_capacity_not_built, choice: erwerbsminderung, covered: false}
   - {from: retirement_reason, to: blocked_no_retirement_reason_applies, choice: andere, covered: false}
+
+  - {from: disability_pension, to: stays_and_absences_via_disability_pension, choice: "yes", covered: false}
+  - {from: disability_pension, to: blocked_no_disability_pension, choice: "no", covered: false}
 
   - {from: resident_three_years, to: employed_last_12_months, choice: "yes", covered: false}
   - {from: resident_three_years, to: spouse_is_german_national, choice: "no", covered: false}
