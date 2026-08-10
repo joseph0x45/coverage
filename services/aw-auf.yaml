@@ -130,15 +130,107 @@ nodes:
     type: leaf
     label: Continues into the shared flow (acting person onward - same for both request types)
 
-  ak_not_built:
+  holds_residence_card:
+    type: decision
+    label: Do you already hold a residence card from a German Foreigners Registration Office?
+  holds_residence_card_no_not_built:
     type: leaf
+    label: Not yet built
+
+  message_about:
+    type: decision
+    label: What is your message about?
+  message_about_ehe_not_built:
+    type: leaf
+    label: Marriage/civil partnership dissolved — not yet built
+  message_about_fortzug_not_built:
+    type: leaf
+    label: Reference person moved away from Germany — not yet built
+  message_about_tod_not_built:
+    type: leaf
+    label: Reference person died — not yet built
+  message_about_rechts_not_built:
+    type: leaf
+    label: Reference person obtained permanent right of residence 5 years ago — not yet built
+
+  residence_permit_five_years:
+    type: decision
+    label: Have you been in possession of a residence permit for five years?
+  residence_permit_five_years_no_not_built:
+    type: leaf
+    label: Not yet built
+
+  resided_five_years_with_reference_person:
+    type: decision
+    label: Have you continuously resided in Germany with your reference person for five years?
+  stays_and_absences_via_five_year_permit:
+    type: leaf
+    label: Continues into the shared flow (acting person onward - same for both request types)
+
+  continue_staying_with_reference_person:
+    type: decision
     label: >
-      Family member of an EU/EEA citizen requesting a residence card —
-      branch not yet built
+      Would you like to continue to stay with a reference person in
+      Germany who is entitled to freedom of movement?
+  blocked_no_continue_staying:
+    type: leaf
+    label: Service blocked — doesn't want to continue staying with reference person
+
+  reference_person_citizenship:
+    type: decision
+    label: What is the citizenship of your reference person?
+  blocked_reference_person_other_country:
+    type: leaf
+    label: Service blocked — reference person has a different nationality (incl. Switzerland)
+
+  reference_person_employed_or_looking:
+    type: decision
+    label: Is your reference person employed or looking for work?
+  reference_person_employed_or_looking_no_not_built:
+    type: leaf
+    label: Not yet built
+
+  rueckkehrerfaelle:
+    type: decision
+    label: >
+      Your reference person is a German citizen — do any of the
+      following statements apply?
+  blocked_rueckkehrerfaelle_none:
+    type: leaf
+    label: Service blocked — none of the statements apply
+
+  family_relationship:
+    type: decision
+    label: What is your family relationship with the reference person?
+  blocked_family_relationship_other:
+    type: leaf
+    label: Service blocked — none of the family relationship statements apply
+
+  wants_shared_dwelling:
+    type: decision
+    label: Do you intend to live permanently with your reference person in a shared dwelling?
+
+  close_family_relationship:
+    type: decision
+    label: >
+      (doesn't want to live in a shared dwelling) Do you still have a
+      close family relationship with the reference person?
+  blocked_no_close_family_relationship:
+    type: leaf
+    label: Service blocked — no close family relationship with reference person
+
+  early_permanent_residence:
+    type: decision
+    label: >
+      Has your reference person been in Germany for less than five years,
+      and do they already have a permanent right of residence?
+  stays_and_absences_via_reference_person:
+    type: leaf
+    label: Continues into the shared flow (acting person onward - same for both request types)
 
 edges:
   - {from: application_type, to: nationality_group, choice: DAB, covered: false}
-  - {from: application_type, to: ak_not_built, choice: AK, covered: false}
+  - {from: application_type, to: holds_residence_card, choice: AK, covered: false}
 
   - {from: nationality_group, to: stay_duration, choice: eu, covered: false}
   - {from: nationality_group, to: blocked_switzerland, choice: schweiz, covered: false}
@@ -186,3 +278,51 @@ edges:
   - {from: residence_in_germany, to: stays_and_absences_via_residence, choice: yes_mit_rueckkehr, covered: false}
   - {from: residence_in_germany, to: blocked_residence_no_weekly_return, choice: yes_ohne_rueckkehr, covered: false}
   - {from: residence_in_germany, to: blocked_no_residence, choice: "no", covered: false}
+
+  - {from: holds_residence_card, to: message_about, choice: "yes", covered: false}
+  - {from: holds_residence_card, to: holds_residence_card_no_not_built, choice: "no", covered: false}
+
+  - {from: message_about, to: residence_permit_five_years, choice: neue_ak_oder_dak, covered: false}
+  - {from: message_about, to: message_about_ehe_not_built, choice: ehe_lebenspartnerschaft, covered: false}
+  - {from: message_about, to: message_about_fortzug_not_built, choice: fortzug_der_bezugsperson, covered: false}
+  - {from: message_about, to: message_about_tod_not_built, choice: tod_der_bezugsperson, covered: false}
+  - {from: message_about, to: message_about_rechts_not_built, choice: rechts_bezugsperson, covered: false}
+
+  - {from: residence_permit_five_years, to: resided_five_years_with_reference_person, choice: "yes", covered: false}
+  - {from: residence_permit_five_years, to: residence_permit_five_years_no_not_built, choice: "no", covered: false}
+
+  - {from: resided_five_years_with_reference_person, to: stays_and_absences_via_five_year_permit, choice: "yes", covered: false}
+  - {from: resided_five_years_with_reference_person, to: continue_staying_with_reference_person, choice: "no", covered: false}
+
+  - {from: continue_staying_with_reference_person, to: reference_person_citizenship, choice: "yes", covered: false}
+  - {from: continue_staying_with_reference_person, to: blocked_no_continue_staying, choice: "no", covered: false}
+
+  - {from: reference_person_citizenship, to: reference_person_employed_or_looking, choice: eu, covered: false}
+  - {from: reference_person_citizenship, to: rueckkehrerfaelle, choice: dtl, covered: false}
+  - {from: reference_person_citizenship, to: reference_person_employed_or_looking, choice: ehe_lebenspartner_eu, covered: false}
+  - {from: reference_person_citizenship, to: blocked_reference_person_other_country, choice: andere, covered: false}
+
+  - {from: reference_person_employed_or_looking, to: family_relationship, choice: "yes", covered: false}
+  - {from: reference_person_employed_or_looking, to: reference_person_employed_or_looking_no_not_built, choice: "no", covered: false}
+
+  - {from: rueckkehrerfaelle, to: family_relationship, choice: gemeinsamer_aufenthalt_eu, covered: false}
+  - {from: rueckkehrerfaelle, to: family_relationship, choice: erwerb_de_bezugsperson, covered: false}
+  - {from: rueckkehrerfaelle, to: family_relationship, choice: deutsches_minderjaehriges_kind, covered: false}
+  - {from: rueckkehrerfaelle, to: blocked_rueckkehrerfaelle_none, choice: keine, covered: false}
+
+  - {from: family_relationship, to: wants_shared_dwelling, choice: ehe, covered: false}
+  - {from: family_relationship, to: wants_shared_dwelling, choice: kind_unter_21, covered: false}
+  - {from: family_relationship, to: wants_shared_dwelling, choice: kind_ueber_21, covered: false}
+  - {from: family_relationship, to: wants_shared_dwelling, choice: fa_mit_unterhalt, covered: false}
+  - {from: family_relationship, to: wants_shared_dwelling, choice: fa_ohne_unterhalt, covered: false}
+  - {from: family_relationship, to: blocked_family_relationship_other, choice: andere, covered: false}
+
+  - {from: wants_shared_dwelling, to: early_permanent_residence, choice: "yes", covered: false}
+  - {from: wants_shared_dwelling, to: close_family_relationship, choice: "no", covered: false}
+
+  - {from: close_family_relationship, to: early_permanent_residence, choice: "yes", covered: false}
+  - {from: close_family_relationship, to: blocked_no_close_family_relationship, choice: "no", covered: false}
+
+  - {from: early_permanent_residence, to: stays_and_absences_via_reference_person, choice: "yes", covered: false}
+  - {from: early_permanent_residence, to: stays_and_absences_via_reference_person, choice: "no", covered: false}
+  - {from: early_permanent_residence, to: stays_and_absences_via_reference_person, choice: unknown, covered: false}
