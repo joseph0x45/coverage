@@ -7,7 +7,7 @@ title: aw-auf
 
 Aufenthaltskarte — residence card for EU/EEA citizens and their family members (persons entitled to freedom of movement).
 
-**Edge coverage:** 0/106 (0%) — solid arrow = covered, dashed = not covered
+**Edge coverage:** 0/115 (0%) — solid arrow = covered, dashed = not covered
 
 ```mermaid
 flowchart TD
@@ -66,9 +66,12 @@ flowchart TD
     child_is_adult{"Is your child 18 years of age or older?"}
     stays_and_absences_via_child_adult["Continues into the shared flow (acting person onward - same for both request types)"]
     fortbestand_aufenthaltsrecht_im_todesfall{"(reference person died) Do any of the following statements apply to you?"}
-    fortbestand_kind_verstorbenen_not_built["Child of a deceased reference person — not yet built"]
-    fortbestand_fuersorge_verstorbenen_not_built["Caring for a child of a deceased reference person — not yet built"]
-    blocked_fortbestand_none["Service blocked — none of the statements apply"]
+    freizuegigkeitsrecht_nutzer{"(none of the above apply) Do any of the following statements apply to you?"}
+    blocked_freizuegigkeitsrecht_nutzer_none["Service blocked — none of the statements apply"]
+    permanently_resident_five_years_todesfall{"Have you been permanently resident in Germany for five years?"}
+    stays_and_absences_via_todesfall_keine["Continues into the shared flow (acting person onward - same for both request types)"]
+    resided_one_year_before_death{"Did you reside together with your reference person in Germany for at least one year before their death?"}
+    blocked_not_resided_one_year_before_death["Service blocked — did not reside together for at least one year before death"]
     reference_person_had_freedom_of_movement_right{"Did your reference person reside in Germany as an employee, trainee, self-employed person, job-seeker or service provider before their death?"}
     blocked_no_freedom_of_movement_right["Service blocked — reference person had no freedom-of-movement residence status"]
     resided_with_reference_person_at_death{"Were you permanently residing with your reference person at the time of death?"}
@@ -139,9 +142,18 @@ flowchart TD
     fortbestand_aufenthaltsrecht_im_todesfall -.->|"mind_2_jaehriger"| reference_person_had_freedom_of_movement_right
     fortbestand_aufenthaltsrecht_im_todesfall -.->|"arbeitsunfall"| reference_person_had_freedom_of_movement_right
     fortbestand_aufenthaltsrecht_im_todesfall -.->|"eheschliessung"| reference_person_had_freedom_of_movement_right
-    fortbestand_aufenthaltsrecht_im_todesfall -.->|"kind_verstorbenen"| fortbestand_kind_verstorbenen_not_built
-    fortbestand_aufenthaltsrecht_im_todesfall -.->|"fuersorge_verstorbenen"| fortbestand_fuersorge_verstorbenen_not_built
-    fortbestand_aufenthaltsrecht_im_todesfall -.->|"keine"| blocked_fortbestand_none
+    fortbestand_aufenthaltsrecht_im_todesfall -.->|"kind_verstorbenen"| attends_educational_institution
+    fortbestand_aufenthaltsrecht_im_todesfall -.->|"fuersorge_verstorbenen"| child_attends_educational_institution
+    fortbestand_aufenthaltsrecht_im_todesfall -.->|"keine"| freizuegigkeitsrecht_nutzer
+    freizuegigkeitsrecht_nutzer -.->|"arbeitnehmer_azubi"| permanently_resident_five_years_todesfall
+    freizuegigkeitsrecht_nutzer -.->|"arbeitssuchend"| permanently_resident_five_years_todesfall
+    freizuegigkeitsrecht_nutzer -.->|"selbststaendig"| permanently_resident_five_years_todesfall
+    freizuegigkeitsrecht_nutzer -.->|"nicht_erwerbstaetig"| permanently_resident_five_years_todesfall
+    freizuegigkeitsrecht_nutzer -.->|"keine"| blocked_freizuegigkeitsrecht_nutzer_none
+    permanently_resident_five_years_todesfall -.->|"yes"| stays_and_absences_via_todesfall_keine
+    permanently_resident_five_years_todesfall -.->|"no"| resided_one_year_before_death
+    resided_one_year_before_death -.->|"yes"| stays_and_absences_via_todesfall_keine
+    resided_one_year_before_death -.->|"no"| blocked_not_resided_one_year_before_death
     reference_person_had_freedom_of_movement_right -.->|"yes"| resided_with_reference_person_at_death
     reference_person_had_freedom_of_movement_right -.->|"no"| blocked_no_freedom_of_movement_right
     resided_with_reference_person_at_death -.->|"yes"| stays_and_absences_via_death
@@ -231,6 +243,9 @@ flowchart TD
 - `resident_five_years_guardian_branch` (0/2 covered): missing yes, no
 - `child_is_adult` (0/2 covered): missing yes, no
 - `fortbestand_aufenthaltsrecht_im_todesfall` (0/6 covered): missing mind_2_jaehriger, arbeitsunfall, eheschliessung, kind_verstorbenen, fuersorge_verstorbenen, keine
+- `freizuegigkeitsrecht_nutzer` (0/5 covered): missing arbeitnehmer_azubi, arbeitssuchend, selbststaendig, nicht_erwerbstaetig, keine
+- `permanently_resident_five_years_todesfall` (0/2 covered): missing yes, no
+- `resided_one_year_before_death` (0/2 covered): missing yes, no
 - `reference_person_had_freedom_of_movement_right` (0/2 covered): missing yes, no
 - `resided_with_reference_person_at_death` (0/2 covered): missing yes, no
 - `residence_permit_five_years` (0/2 covered): missing yes, no

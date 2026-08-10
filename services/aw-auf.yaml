@@ -216,15 +216,31 @@ nodes:
     label: >
       (reference person died) Do any of the following statements apply
       to you?
-  fortbestand_kind_verstorbenen_not_built:
-    type: leaf
-    label: Child of a deceased reference person — not yet built
-  fortbestand_fuersorge_verstorbenen_not_built:
-    type: leaf
-    label: Caring for a child of a deceased reference person — not yet built
-  blocked_fortbestand_none:
+
+  freizuegigkeitsrecht_nutzer:
+    type: decision
+    label: >
+      (none of the above apply) Do any of the following statements apply
+      to you?
+  blocked_freizuegigkeitsrecht_nutzer_none:
     type: leaf
     label: Service blocked — none of the statements apply
+
+  permanently_resident_five_years_todesfall:
+    type: decision
+    label: Have you been permanently resident in Germany for five years?
+  stays_and_absences_via_todesfall_keine:
+    type: leaf
+    label: Continues into the shared flow (acting person onward - same for both request types)
+
+  resided_one_year_before_death:
+    type: decision
+    label: >
+      Did you reside together with your reference person in Germany for
+      at least one year before their death?
+  blocked_not_resided_one_year_before_death:
+    type: leaf
+    label: Service blocked — did not reside together for at least one year before death
 
   reference_person_had_freedom_of_movement_right:
     type: decision
@@ -388,9 +404,21 @@ edges:
   - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: reference_person_had_freedom_of_movement_right, choice: mind_2_jaehriger, covered: false}
   - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: reference_person_had_freedom_of_movement_right, choice: arbeitsunfall, covered: false}
   - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: reference_person_had_freedom_of_movement_right, choice: eheschliessung, covered: false}
-  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: fortbestand_kind_verstorbenen_not_built, choice: kind_verstorbenen, covered: false}
-  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: fortbestand_fuersorge_verstorbenen_not_built, choice: fuersorge_verstorbenen, covered: false}
-  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: blocked_fortbestand_none, choice: keine, covered: false}
+  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: attends_educational_institution, choice: kind_verstorbenen, covered: false}
+  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: child_attends_educational_institution, choice: fuersorge_verstorbenen, covered: false}
+  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: freizuegigkeitsrecht_nutzer, choice: keine, covered: false}
+
+  - {from: freizuegigkeitsrecht_nutzer, to: permanently_resident_five_years_todesfall, choice: arbeitnehmer_azubi, covered: false}
+  - {from: freizuegigkeitsrecht_nutzer, to: permanently_resident_five_years_todesfall, choice: arbeitssuchend, covered: false}
+  - {from: freizuegigkeitsrecht_nutzer, to: permanently_resident_five_years_todesfall, choice: selbststaendig, covered: false}
+  - {from: freizuegigkeitsrecht_nutzer, to: permanently_resident_five_years_todesfall, choice: nicht_erwerbstaetig, covered: false}
+  - {from: freizuegigkeitsrecht_nutzer, to: blocked_freizuegigkeitsrecht_nutzer_none, choice: keine, covered: false}
+
+  - {from: permanently_resident_five_years_todesfall, to: stays_and_absences_via_todesfall_keine, choice: "yes", covered: false}
+  - {from: permanently_resident_five_years_todesfall, to: resided_one_year_before_death, choice: "no", covered: false}
+
+  - {from: resided_one_year_before_death, to: stays_and_absences_via_todesfall_keine, choice: "yes", covered: false}
+  - {from: resided_one_year_before_death, to: blocked_not_resided_one_year_before_death, choice: "no", covered: false}
 
   - {from: reference_person_had_freedom_of_movement_right, to: resided_with_reference_person_at_death, choice: "yes", covered: false}
   - {from: reference_person_had_freedom_of_movement_right, to: blocked_no_freedom_of_movement_right, choice: "no", covered: false}
