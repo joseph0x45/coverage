@@ -47,9 +47,15 @@ nodes:
     type: leaf
     label: Reach the "Stays and absences" page — not yet built further
 
-  retirement_reason_reduced_capacity_not_built:
+  resident_two_years:
+    type: decision
+    label: >
+      Have you been continuously resident in German federal territory for
+      at least two years?
+  stays_and_absences_via_two_years:
     type: leaf
-    label: Retired due to a full reduction in earning capacity — not yet built
+    label: Reach the "Stays and absences" page — not yet built further
+
   blocked_no_retirement_reason_applies:
     type: leaf
     label: Service blocked — none of the retirement-reason statements apply
@@ -149,11 +155,14 @@ edges:
 
   - {from: retirement_reason, to: resident_three_years, choice: ruhestand, covered: false}
   - {from: retirement_reason, to: disability_pension, choice: unfall, covered: false}
-  - {from: retirement_reason, to: retirement_reason_reduced_capacity_not_built, choice: erwerbsminderung, covered: false}
+  - {from: retirement_reason, to: resident_two_years, choice: erwerbsminderung, covered: false}
   - {from: retirement_reason, to: blocked_no_retirement_reason_applies, choice: andere, covered: false}
 
   - {from: disability_pension, to: stays_and_absences_via_disability_pension, choice: "yes", covered: false}
   - {from: disability_pension, to: blocked_no_disability_pension, choice: "no", covered: false}
+
+  - {from: resident_two_years, to: stays_and_absences_via_two_years, choice: "yes", covered: false}
+  - {from: resident_two_years, to: spouse_is_german_national, choice: "no", covered: false}
 
   - {from: resident_three_years, to: employed_last_12_months, choice: "yes", covered: false}
   - {from: resident_three_years, to: spouse_is_german_national, choice: "no", covered: false}
