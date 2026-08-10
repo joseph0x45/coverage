@@ -309,9 +309,19 @@ nodes:
   reference_person_employed_or_looking:
     type: decision
     label: Is your reference person employed or looking for work?
-  reference_person_employed_or_looking_no_not_built:
+
+  reference_person_studies:
+    type: decision
+    label: Is your reference person staying in Germany solely for the purpose of studying?
+
+  studies_family_relationship:
+    type: decision
+    label: >
+      (reference person studying) What is your family relationship with the
+      reference person?
+  blocked_studies_family_relationship_none:
     type: leaf
-    label: Not yet built
+    label: Service blocked — none of the statements apply
 
   rueckkehrerfaelle:
     type: decision
@@ -494,7 +504,14 @@ edges:
   - {from: reference_person_citizenship, to: blocked_reference_person_other_country, choice: andere, covered: false}
 
   - {from: reference_person_employed_or_looking, to: family_relationship, choice: "yes", covered: false}
-  - {from: reference_person_employed_or_looking, to: reference_person_employed_or_looking_no_not_built, choice: "no", covered: false}
+  - {from: reference_person_employed_or_looking, to: reference_person_studies, choice: "no", covered: false}
+
+  - {from: reference_person_studies, to: studies_family_relationship, choice: "yes", covered: false}
+  - {from: reference_person_studies, to: family_relationship, choice: "no", covered: false}
+
+  - {from: studies_family_relationship, to: wants_shared_dwelling, choice: ehe, covered: false}
+  - {from: studies_family_relationship, to: wants_shared_dwelling, choice: kind_mit_unterhalt, covered: false}
+  - {from: studies_family_relationship, to: blocked_studies_family_relationship_none, choice: keine, covered: false}
 
   - {from: rueckkehrerfaelle, to: family_relationship, choice: gemeinsamer_aufenthalt_eu, covered: false}
   - {from: rueckkehrerfaelle, to: family_relationship, choice: erwerb_de_bezugsperson, covered: false}
