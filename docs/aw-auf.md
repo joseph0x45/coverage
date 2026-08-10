@@ -7,7 +7,7 @@ title: aw-auf
 
 Aufenthaltskarte — residence card for EU/EEA citizens and their family members (persons entitled to freedom of movement).
 
-**Edge coverage:** 0/83 (0%) — solid arrow = covered, dashed = not covered
+**Edge coverage:** 0/96 (0%) — solid arrow = covered, dashed = not covered
 
 ```mermaid
 flowchart TD
@@ -53,7 +53,18 @@ flowchart TD
     blocked_ausnahmetatbestaende_none["Service blocked — none of the statements apply"]
     permanently_resident_five_years{"Have you been permanently resident in Germany for five years?"}
     stays_and_absences_via_ehe_lebenspartnerschaft["Continues into the shared flow (acting person onward - same for both request types)"]
-    message_about_fortzug_not_built["Reference person moved away from Germany — not yet built"]
+    fortzug_reason{"(reference person moved away) Do any of the following statements apply to you?"}
+    blocked_fortzug_reason_none["Service blocked — none of the statements apply"]
+    attends_educational_institution{"(I am the child of the reference person) Are you attending an educational institution for training purposes?"}
+    blocked_not_attending_educational_institution["Service blocked — not attending an educational institution"]
+    resident_five_years_kind_branch{"Have you been permanently resident in Germany for five years?"}
+    stays_and_absences_via_kind_branch["Continues into the shared flow (acting person onward - same for both request types)"]
+    child_attends_educational_institution{"(I am caring for the reference person's child) Does your child attend an educational institution for training purposes?"}
+    blocked_child_not_attending_educational_institution["Service blocked — child not attending an educational institution"]
+    resident_five_years_guardian_branch{"Have you been permanently resident in Germany for five years?"}
+    stays_and_absences_via_guardian_five_years["Continues into the shared flow (acting person onward - same for both request types)"]
+    child_is_adult{"Is your child 18 years of age or older?"}
+    stays_and_absences_via_child_adult["Continues into the shared flow (acting person onward - same for both request types)"]
     message_about_tod_not_built["Reference person died — not yet built"]
     message_about_rechts_not_built["Reference person obtained permanent right of residence 5 years ago — not yet built"]
     residence_permit_five_years{"Have you been in possession of a residence permit for five years?"}
@@ -114,9 +125,22 @@ flowchart TD
     holds_residence_card -.->|"no"| holds_residence_card_no_not_built
     message_about -.->|"neue_ak_oder_dak"| residence_permit_five_years
     message_about -.->|"ehe_lebenspartnerschaft"| freizuegigkeitsvoraussetzungen
-    message_about -.->|"fortzug_der_bezugsperson"| message_about_fortzug_not_built
+    message_about -.->|"fortzug_der_bezugsperson"| fortzug_reason
     message_about -.->|"tod_der_bezugsperson"| message_about_tod_not_built
     message_about -.->|"rechts_bezugsperson"| message_about_rechts_not_built
+    fortzug_reason -.->|"kind"| attends_educational_institution
+    fortzug_reason -.->|"sorgeberechtigter_elternteil"| child_attends_educational_institution
+    fortzug_reason -.->|"keine"| blocked_fortzug_reason_none
+    attends_educational_institution -.->|"yes"| resident_five_years_kind_branch
+    attends_educational_institution -.->|"no"| blocked_not_attending_educational_institution
+    resident_five_years_kind_branch -.->|"yes"| stays_and_absences_via_kind_branch
+    resident_five_years_kind_branch -.->|"no"| stays_and_absences_via_kind_branch
+    child_attends_educational_institution -.->|"yes"| resident_five_years_guardian_branch
+    child_attends_educational_institution -.->|"no"| blocked_child_not_attending_educational_institution
+    resident_five_years_guardian_branch -.->|"yes"| stays_and_absences_via_guardian_five_years
+    resident_five_years_guardian_branch -.->|"no"| child_is_adult
+    child_is_adult -.->|"yes"| stays_and_absences_via_child_adult
+    child_is_adult -.->|"no"| stays_and_absences_via_child_adult
     freizuegigkeitsvoraussetzungen -.->|"arbeitnehmer_azubi"| ausnahmetatbestaende
     freizuegigkeitsvoraussetzungen -.->|"arbeitssuchend"| ausnahmetatbestaende
     freizuegigkeitsvoraussetzungen -.->|"selbststaendig"| ausnahmetatbestaende
@@ -182,6 +206,12 @@ flowchart TD
 - `freizuegigkeitsvoraussetzungen` (0/5 covered): missing arbeitnehmer_azubi, arbeitssuchend, selbststaendig, nicht_erwerbstaetig, keine
 - `ausnahmetatbestaende` (0/5 covered): missing dauer_der_ehe, kind_der_ehem_bezugsperson, umgangsrecht_fuer_kind, besondere_haerte, keine
 - `permanently_resident_five_years` (0/2 covered): missing yes, no
+- `fortzug_reason` (0/3 covered): missing kind, sorgeberechtigter_elternteil, keine
+- `attends_educational_institution` (0/2 covered): missing yes, no
+- `resident_five_years_kind_branch` (0/2 covered): missing yes, no
+- `child_attends_educational_institution` (0/2 covered): missing yes, no
+- `resident_five_years_guardian_branch` (0/2 covered): missing yes, no
+- `child_is_adult` (0/2 covered): missing yes, no
 - `residence_permit_five_years` (0/2 covered): missing yes, no
 - `resided_five_years_with_reference_person` (0/2 covered): missing yes, no
 - `continue_staying_with_reference_person` (0/2 covered): missing yes, no

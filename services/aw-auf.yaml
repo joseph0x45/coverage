@@ -163,9 +163,54 @@ nodes:
     type: leaf
     label: Continues into the shared flow (acting person onward - same for both request types)
 
-  message_about_fortzug_not_built:
+  fortzug_reason:
+    type: decision
+    label: >
+      (reference person moved away) Do any of the following statements
+      apply to you?
+  blocked_fortzug_reason_none:
     type: leaf
-    label: Reference person moved away from Germany — not yet built
+    label: Service blocked — none of the statements apply
+
+  attends_educational_institution:
+    type: decision
+    label: >
+      (I am the child of the reference person) Are you attending an
+      educational institution for training purposes?
+  blocked_not_attending_educational_institution:
+    type: leaf
+    label: Service blocked — not attending an educational institution
+
+  resident_five_years_kind_branch:
+    type: decision
+    label: Have you been permanently resident in Germany for five years?
+  stays_and_absences_via_kind_branch:
+    type: leaf
+    label: Continues into the shared flow (acting person onward - same for both request types)
+
+  child_attends_educational_institution:
+    type: decision
+    label: >
+      (I am caring for the reference person's child) Does your child
+      attend an educational institution for training purposes?
+  blocked_child_not_attending_educational_institution:
+    type: leaf
+    label: Service blocked — child not attending an educational institution
+
+  resident_five_years_guardian_branch:
+    type: decision
+    label: Have you been permanently resident in Germany for five years?
+  stays_and_absences_via_guardian_five_years:
+    type: leaf
+    label: Continues into the shared flow (acting person onward - same for both request types)
+
+  child_is_adult:
+    type: decision
+    label: Is your child 18 years of age or older?
+  stays_and_absences_via_child_adult:
+    type: leaf
+    label: Continues into the shared flow (acting person onward - same for both request types)
+
   message_about_tod_not_built:
     type: leaf
     label: Reference person died — not yet built
@@ -304,9 +349,28 @@ edges:
 
   - {from: message_about, to: residence_permit_five_years, choice: neue_ak_oder_dak, covered: false}
   - {from: message_about, to: freizuegigkeitsvoraussetzungen, choice: ehe_lebenspartnerschaft, covered: false}
-  - {from: message_about, to: message_about_fortzug_not_built, choice: fortzug_der_bezugsperson, covered: false}
+  - {from: message_about, to: fortzug_reason, choice: fortzug_der_bezugsperson, covered: false}
   - {from: message_about, to: message_about_tod_not_built, choice: tod_der_bezugsperson, covered: false}
   - {from: message_about, to: message_about_rechts_not_built, choice: rechts_bezugsperson, covered: false}
+
+  - {from: fortzug_reason, to: attends_educational_institution, choice: kind, covered: false}
+  - {from: fortzug_reason, to: child_attends_educational_institution, choice: sorgeberechtigter_elternteil, covered: false}
+  - {from: fortzug_reason, to: blocked_fortzug_reason_none, choice: keine, covered: false}
+
+  - {from: attends_educational_institution, to: resident_five_years_kind_branch, choice: "yes", covered: false}
+  - {from: attends_educational_institution, to: blocked_not_attending_educational_institution, choice: "no", covered: false}
+
+  - {from: resident_five_years_kind_branch, to: stays_and_absences_via_kind_branch, choice: "yes", covered: false}
+  - {from: resident_five_years_kind_branch, to: stays_and_absences_via_kind_branch, choice: "no", covered: false}
+
+  - {from: child_attends_educational_institution, to: resident_five_years_guardian_branch, choice: "yes", covered: false}
+  - {from: child_attends_educational_institution, to: blocked_child_not_attending_educational_institution, choice: "no", covered: false}
+
+  - {from: resident_five_years_guardian_branch, to: stays_and_absences_via_guardian_five_years, choice: "yes", covered: false}
+  - {from: resident_five_years_guardian_branch, to: child_is_adult, choice: "no", covered: false}
+
+  - {from: child_is_adult, to: stays_and_absences_via_child_adult, choice: "yes", covered: false}
+  - {from: child_is_adult, to: stays_and_absences_via_child_adult, choice: "no", covered: false}
 
   - {from: freizuegigkeitsvoraussetzungen, to: ausnahmetatbestaende, choice: arbeitnehmer_azubi, covered: false}
   - {from: freizuegigkeitsvoraussetzungen, to: ausnahmetatbestaende, choice: arbeitssuchend, covered: false}
