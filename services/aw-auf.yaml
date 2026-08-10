@@ -45,7 +45,7 @@ nodes:
     label: Service blocked — not entitled to a disability pension within German federal territory
   stays_and_absences_via_disability_pension:
     type: leaf
-    label: Reach the "Stays and absences" page — not yet built further
+    label: Reach the "Personal details" page — not yet built further
 
   resident_two_years:
     type: decision
@@ -54,7 +54,7 @@ nodes:
       at least two years?
   stays_and_absences_via_two_years:
     type: leaf
-    label: Reach the "Stays and absences" page — not yet built further
+    label: Reach the "Personal details" page — not yet built further
 
   blocked_no_retirement_reason_applies:
     type: leaf
@@ -116,19 +116,19 @@ nodes:
 
   stays_and_absences_via_five_years:
     type: leaf
-    label: Reach the "Stays and absences" page — not yet built further
+    label: Reach the "Personal details" page — not yet built further
   stays_and_absences_via_residence:
     type: leaf
-    label: Reach the "Stays and absences" page — not yet built further
+    label: Reach the "Personal details" page — not yet built further
   stays_and_absences_via_recent_employment:
     type: leaf
-    label: Reach the "Stays and absences" page — not yet built further
+    label: Reach the "Personal details" page — not yet built further
   stays_and_absences_via_german_spouse:
     type: leaf
-    label: Reach the "Stays and absences" page — not yet built further
+    label: Reach the "Personal details" page — not yet built further
   stays_and_absences_via_former_german_spouse:
     type: leaf
-    label: Reach the "Stays and absences" page — not yet built further
+    label: Reach the "Personal details" page — not yet built further
 
   ak_not_built:
     type: leaf
