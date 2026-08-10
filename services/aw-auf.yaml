@@ -211,9 +211,41 @@ nodes:
     type: leaf
     label: Continues into the shared flow (acting person onward - same for both request types)
 
-  message_about_tod_not_built:
+  fortbestand_aufenthaltsrecht_im_todesfall:
+    type: decision
+    label: >
+      (reference person died) Do any of the following statements apply
+      to you?
+  fortbestand_kind_verstorbenen_not_built:
     type: leaf
-    label: Reference person died — not yet built
+    label: Child of a deceased reference person — not yet built
+  fortbestand_fuersorge_verstorbenen_not_built:
+    type: leaf
+    label: Caring for a child of a deceased reference person — not yet built
+  blocked_fortbestand_none:
+    type: leaf
+    label: Service blocked — none of the statements apply
+
+  reference_person_had_freedom_of_movement_right:
+    type: decision
+    label: >
+      Did your reference person reside in Germany as an employee,
+      trainee, self-employed person, job-seeker or service provider
+      before their death?
+  blocked_no_freedom_of_movement_right:
+    type: leaf
+    label: Service blocked — reference person had no freedom-of-movement residence status
+
+  resided_with_reference_person_at_death:
+    type: decision
+    label: Were you permanently residing with your reference person at the time of death?
+  blocked_not_resided_at_death:
+    type: leaf
+    label: Service blocked — not permanently residing with reference person at time of death
+  stays_and_absences_via_death:
+    type: leaf
+    label: Continues into the shared flow (acting person onward - same for both request types)
+
   message_about_rechts_not_built:
     type: leaf
     label: Reference person obtained permanent right of residence 5 years ago — not yet built
@@ -350,8 +382,21 @@ edges:
   - {from: message_about, to: residence_permit_five_years, choice: neue_ak_oder_dak, covered: false}
   - {from: message_about, to: freizuegigkeitsvoraussetzungen, choice: ehe_lebenspartnerschaft, covered: false}
   - {from: message_about, to: fortzug_reason, choice: fortzug_der_bezugsperson, covered: false}
-  - {from: message_about, to: message_about_tod_not_built, choice: tod_der_bezugsperson, covered: false}
+  - {from: message_about, to: fortbestand_aufenthaltsrecht_im_todesfall, choice: tod_der_bezugsperson, covered: false}
   - {from: message_about, to: message_about_rechts_not_built, choice: rechts_bezugsperson, covered: false}
+
+  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: reference_person_had_freedom_of_movement_right, choice: mind_2_jaehriger, covered: false}
+  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: reference_person_had_freedom_of_movement_right, choice: arbeitsunfall, covered: false}
+  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: reference_person_had_freedom_of_movement_right, choice: eheschliessung, covered: false}
+  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: fortbestand_kind_verstorbenen_not_built, choice: kind_verstorbenen, covered: false}
+  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: fortbestand_fuersorge_verstorbenen_not_built, choice: fuersorge_verstorbenen, covered: false}
+  - {from: fortbestand_aufenthaltsrecht_im_todesfall, to: blocked_fortbestand_none, choice: keine, covered: false}
+
+  - {from: reference_person_had_freedom_of_movement_right, to: resided_with_reference_person_at_death, choice: "yes", covered: false}
+  - {from: reference_person_had_freedom_of_movement_right, to: blocked_no_freedom_of_movement_right, choice: "no", covered: false}
+
+  - {from: resided_with_reference_person_at_death, to: stays_and_absences_via_death, choice: "yes", covered: false}
+  - {from: resided_with_reference_person_at_death, to: blocked_not_resided_at_death, choice: "no", covered: false}
 
   - {from: fortzug_reason, to: attends_educational_institution, choice: kind, covered: false}
   - {from: fortzug_reason, to: child_attends_educational_institution, choice: sorgeberechtigter_elternteil, covered: false}

@@ -7,7 +7,7 @@ title: aw-auf
 
 Aufenthaltskarte — residence card for EU/EEA citizens and their family members (persons entitled to freedom of movement).
 
-**Edge coverage:** 0/96 (0%) — solid arrow = covered, dashed = not covered
+**Edge coverage:** 0/106 (0%) — solid arrow = covered, dashed = not covered
 
 ```mermaid
 flowchart TD
@@ -65,7 +65,15 @@ flowchart TD
     stays_and_absences_via_guardian_five_years["Continues into the shared flow (acting person onward - same for both request types)"]
     child_is_adult{"Is your child 18 years of age or older?"}
     stays_and_absences_via_child_adult["Continues into the shared flow (acting person onward - same for both request types)"]
-    message_about_tod_not_built["Reference person died — not yet built"]
+    fortbestand_aufenthaltsrecht_im_todesfall{"(reference person died) Do any of the following statements apply to you?"}
+    fortbestand_kind_verstorbenen_not_built["Child of a deceased reference person — not yet built"]
+    fortbestand_fuersorge_verstorbenen_not_built["Caring for a child of a deceased reference person — not yet built"]
+    blocked_fortbestand_none["Service blocked — none of the statements apply"]
+    reference_person_had_freedom_of_movement_right{"Did your reference person reside in Germany as an employee, trainee, self-employed person, job-seeker or service provider before their death?"}
+    blocked_no_freedom_of_movement_right["Service blocked — reference person had no freedom-of-movement residence status"]
+    resided_with_reference_person_at_death{"Were you permanently residing with your reference person at the time of death?"}
+    blocked_not_resided_at_death["Service blocked — not permanently residing with reference person at time of death"]
+    stays_and_absences_via_death["Continues into the shared flow (acting person onward - same for both request types)"]
     message_about_rechts_not_built["Reference person obtained permanent right of residence 5 years ago — not yet built"]
     residence_permit_five_years{"Have you been in possession of a residence permit for five years?"}
     residence_permit_five_years_no_not_built["Not yet built"]
@@ -126,8 +134,18 @@ flowchart TD
     message_about -.->|"neue_ak_oder_dak"| residence_permit_five_years
     message_about -.->|"ehe_lebenspartnerschaft"| freizuegigkeitsvoraussetzungen
     message_about -.->|"fortzug_der_bezugsperson"| fortzug_reason
-    message_about -.->|"tod_der_bezugsperson"| message_about_tod_not_built
+    message_about -.->|"tod_der_bezugsperson"| fortbestand_aufenthaltsrecht_im_todesfall
     message_about -.->|"rechts_bezugsperson"| message_about_rechts_not_built
+    fortbestand_aufenthaltsrecht_im_todesfall -.->|"mind_2_jaehriger"| reference_person_had_freedom_of_movement_right
+    fortbestand_aufenthaltsrecht_im_todesfall -.->|"arbeitsunfall"| reference_person_had_freedom_of_movement_right
+    fortbestand_aufenthaltsrecht_im_todesfall -.->|"eheschliessung"| reference_person_had_freedom_of_movement_right
+    fortbestand_aufenthaltsrecht_im_todesfall -.->|"kind_verstorbenen"| fortbestand_kind_verstorbenen_not_built
+    fortbestand_aufenthaltsrecht_im_todesfall -.->|"fuersorge_verstorbenen"| fortbestand_fuersorge_verstorbenen_not_built
+    fortbestand_aufenthaltsrecht_im_todesfall -.->|"keine"| blocked_fortbestand_none
+    reference_person_had_freedom_of_movement_right -.->|"yes"| resided_with_reference_person_at_death
+    reference_person_had_freedom_of_movement_right -.->|"no"| blocked_no_freedom_of_movement_right
+    resided_with_reference_person_at_death -.->|"yes"| stays_and_absences_via_death
+    resided_with_reference_person_at_death -.->|"no"| blocked_not_resided_at_death
     fortzug_reason -.->|"kind"| attends_educational_institution
     fortzug_reason -.->|"sorgeberechtigter_elternteil"| child_attends_educational_institution
     fortzug_reason -.->|"keine"| blocked_fortzug_reason_none
@@ -212,6 +230,9 @@ flowchart TD
 - `child_attends_educational_institution` (0/2 covered): missing yes, no
 - `resident_five_years_guardian_branch` (0/2 covered): missing yes, no
 - `child_is_adult` (0/2 covered): missing yes, no
+- `fortbestand_aufenthaltsrecht_im_todesfall` (0/6 covered): missing mind_2_jaehriger, arbeitsunfall, eheschliessung, kind_verstorbenen, fuersorge_verstorbenen, keine
+- `reference_person_had_freedom_of_movement_right` (0/2 covered): missing yes, no
+- `resided_with_reference_person_at_death` (0/2 covered): missing yes, no
 - `residence_permit_five_years` (0/2 covered): missing yes, no
 - `resided_five_years_with_reference_person` (0/2 covered): missing yes, no
 - `continue_staying_with_reference_person` (0/2 covered): missing yes, no
