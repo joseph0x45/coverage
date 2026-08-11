@@ -7,7 +7,7 @@ title: aw-auf
 
 Aufenthaltskarte — residence card for EU/EEA citizens and their family members (persons entitled to freedom of movement).
 
-**Edge coverage:** 0/117 (0%) — solid arrow = covered, dashed = not covered
+**Edge coverage:** 0/126 (0%) — solid arrow = covered, dashed = not covered
 
 ```mermaid
 flowchart TD
@@ -45,7 +45,8 @@ flowchart TD
     stays_and_absences_via_german_spouse["Continues into the shared flow (acting person onward - same for both request types)"]
     stays_and_absences_via_former_german_spouse["Continues into the shared flow (acting person onward - same for both request types)"]
     holds_residence_card{"Do you already hold a residence card from a German Foreigners Registration Office?"}
-    holds_residence_card_no_not_built["Not yet built"]
+    has_visa{"Do you have a visa from a German embassy or consulate abroad?"}
+    has_foreign_residence_card{"Do you have a valid residence card of another EU or EEA state?"}
     message_about{"What is your message about?"}
     freizuegigkeitsvoraussetzungen{"(marriage/civil partnership dissolved) Do any of the following statements apply to you?"}
     blocked_freizuegigkeitsvoraussetzungen_none["Service blocked — none of the statements apply"]
@@ -81,7 +82,6 @@ flowchart TD
     blocked_not_resides_all_time["Service blocked — does not reside with reference person all the time"]
     stays_and_absences_via_rechts_bezugsperson["Continues into the shared flow (acting person onward - same for both request types)"]
     residence_permit_five_years{"Have you been in possession of a residence permit for five years?"}
-    residence_permit_five_years_no_not_built["Not yet built"]
     resided_five_years_with_reference_person{"Have you continuously resided in Germany with your reference person for five years?"}
     stays_and_absences_via_five_year_permit["Continues into the shared flow (acting person onward - same for both request types)"]
     continue_staying_with_reference_person{"Would you like to continue to stay with a reference person in Germany who is entitled to freedom of movement?"}
@@ -89,7 +89,9 @@ flowchart TD
     reference_person_citizenship{"What is the citizenship of your reference person?"}
     blocked_reference_person_other_country["Service blocked — reference person has a different nationality (incl. Switzerland)"]
     reference_person_employed_or_looking{"Is your reference person employed or looking for work?"}
-    reference_person_employed_or_looking_no_not_built["Not yet built"]
+    reference_person_studies{"Is your reference person staying in Germany solely for the purpose of studying?"}
+    studies_family_relationship{"(reference person studying) What is your family relationship with the reference person?"}
+    blocked_studies_family_relationship_none["Service blocked — none of the statements apply"]
     rueckkehrerfaelle{"Your reference person is a German citizen — do any of the following statements apply?"}
     blocked_rueckkehrerfaelle_none["Service blocked — none of the statements apply"]
     family_relationship{"What is your family relationship with the reference person?"}
@@ -135,7 +137,11 @@ flowchart TD
     residence_in_germany -.->|"yes_ohne_rueckkehr"| blocked_residence_no_weekly_return
     residence_in_germany -.->|"no"| blocked_no_residence
     holds_residence_card -.->|"yes"| message_about
-    holds_residence_card -.->|"no"| holds_residence_card_no_not_built
+    holds_residence_card -.->|"no"| has_visa
+    has_visa -.->|"yes"| reference_person_citizenship
+    has_visa -.->|"no"| has_foreign_residence_card
+    has_foreign_residence_card -.->|"yes"| reference_person_citizenship
+    has_foreign_residence_card -.->|"no"| reference_person_citizenship
     message_about -.->|"neue_ak_oder_dak"| residence_permit_five_years
     message_about -.->|"ehe_lebenspartnerschaft"| freizuegigkeitsvoraussetzungen
     message_about -.->|"fortzug_der_bezugsperson"| fortzug_reason
@@ -188,7 +194,7 @@ flowchart TD
     permanently_resident_five_years -.->|"yes"| stays_and_absences_via_ehe_lebenspartnerschaft
     permanently_resident_five_years -.->|"no"| stays_and_absences_via_ehe_lebenspartnerschaft
     residence_permit_five_years -.->|"yes"| resided_five_years_with_reference_person
-    residence_permit_five_years -.->|"no"| residence_permit_five_years_no_not_built
+    residence_permit_five_years -.->|"no"| continue_staying_with_reference_person
     resided_five_years_with_reference_person -.->|"yes"| stays_and_absences_via_five_year_permit
     resided_five_years_with_reference_person -.->|"no"| continue_staying_with_reference_person
     continue_staying_with_reference_person -.->|"yes"| reference_person_citizenship
@@ -198,7 +204,12 @@ flowchart TD
     reference_person_citizenship -.->|"ehe_lebenspartner_eu"| reference_person_employed_or_looking
     reference_person_citizenship -.->|"andere"| blocked_reference_person_other_country
     reference_person_employed_or_looking -.->|"yes"| family_relationship
-    reference_person_employed_or_looking -.->|"no"| reference_person_employed_or_looking_no_not_built
+    reference_person_employed_or_looking -.->|"no"| reference_person_studies
+    reference_person_studies -.->|"yes"| studies_family_relationship
+    reference_person_studies -.->|"no"| family_relationship
+    studies_family_relationship -.->|"ehe"| wants_shared_dwelling
+    studies_family_relationship -.->|"kind_mit_unterhalt"| wants_shared_dwelling
+    studies_family_relationship -.->|"keine"| blocked_studies_family_relationship_none
     rueckkehrerfaelle -.->|"gemeinsamer_aufenthalt_eu"| family_relationship
     rueckkehrerfaelle -.->|"erwerb_de_bezugsperson"| family_relationship
     rueckkehrerfaelle -.->|"deutsches_minderjaehriges_kind"| family_relationship
@@ -236,6 +247,8 @@ flowchart TD
 - `prior_work_duration` (0/2 covered): missing more_than_three, less_than_three
 - `residence_in_germany` (0/3 covered): missing yes_mit_rueckkehr, yes_ohne_rueckkehr, no
 - `holds_residence_card` (0/2 covered): missing yes, no
+- `has_visa` (0/2 covered): missing yes, no
+- `has_foreign_residence_card` (0/2 covered): missing yes, no
 - `message_about` (0/5 covered): missing neue_ak_oder_dak, ehe_lebenspartnerschaft, fortzug_der_bezugsperson, tod_der_bezugsperson, rechts_bezugsperson
 - `freizuegigkeitsvoraussetzungen` (0/5 covered): missing arbeitnehmer_azubi, arbeitssuchend, selbststaendig, nicht_erwerbstaetig, keine
 - `ausnahmetatbestaende` (0/5 covered): missing dauer_der_ehe, kind_der_ehem_bezugsperson, umgangsrecht_fuer_kind, besondere_haerte, keine
@@ -258,6 +271,8 @@ flowchart TD
 - `continue_staying_with_reference_person` (0/2 covered): missing yes, no
 - `reference_person_citizenship` (0/4 covered): missing eu, dtl, ehe_lebenspartner_eu, andere
 - `reference_person_employed_or_looking` (0/2 covered): missing yes, no
+- `reference_person_studies` (0/2 covered): missing yes, no
+- `studies_family_relationship` (0/3 covered): missing ehe, kind_mit_unterhalt, keine
 - `rueckkehrerfaelle` (0/4 covered): missing gemeinsamer_aufenthalt_eu, erwerb_de_bezugsperson, deutsches_minderjaehriges_kind, keine
 - `family_relationship` (0/6 covered): missing ehe, kind_unter_21, kind_ueber_21, fa_mit_unterhalt, fa_ohne_unterhalt, andere
 - `wants_shared_dwelling` (0/2 covered): missing yes, no
